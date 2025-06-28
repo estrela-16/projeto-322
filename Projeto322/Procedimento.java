@@ -33,7 +33,7 @@ public class Procedimento {
    }
 
 
-   public double calcularValor(){
+    public double calcularValor(){
        double total = 0;
        for(int i = 0; i <  material.size(); i++){
            total += material.get(i).getValor(); /* pega o Material na lista e dele pega o valor */
@@ -42,9 +42,6 @@ public class Procedimento {
        }
        return total;
    }
-
-
-
 
 
 
