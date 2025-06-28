@@ -1,31 +1,28 @@
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Agenda {
-   private Map <LocalDate, Atendimento > atendimentos;
-  
-   public Agenda(){
-       atendimentos= new HashMap<>();
-   }
+    private List<Atendimento> atendimentos;
 
+    public Agenda() {
+        this.atendimentos = new ArrayList<>();
+    }
 
-   public void agendar (LocalDate data, Procedimento procedimento){
-       Atendimento a = atendimentos.getOrDefault(data, new Atendimento(data));
-       atendimentos.put(data,a);
-   }
-  
-   public Atendimento getAtendimentoDia (LocalDate data){
-       return  atendimentos.get(data);
-   }  
+    public void agendarAtendimento(Atendimento atendimento) {
+        atendimentos.add(atendimento);
+    }
 
+    public List<Atendimento> getAtendimentos(int mes, int ano) {
+        return atendimentos.stream()
+            .filter(a -> a.getData().getMonthValue() == mes && a.getData().getYear() == ano)
+            .collect(Collectors.toList());
+    }
 
-   public Map<LocalDate, Atendimento> getTodosAtendimentos(){
-       return atendimentos;
-   }
-
-
+    public List<Atendimento> getTodos() {
+        return atendimentos;
+    }
 }
 
 

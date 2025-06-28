@@ -1,24 +1,31 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Financeiro {
 
     double percentualComissao; /*porecentagem ganha pelos dentistas por consulta */
     double gastosGerais; /*valor fixo por consulta pra manutencao do consultorio */
-    
+    Agenda agenda;
+
+    public Financeiro(Agenda agenda, double percentual, double despesas) {
+        this.agenda = agenda;
+        this.percentualComissao = percentual;
+        this.gastosGerais = despesas;
+    }
 
     public double calcularGanhos(int mes, int ano){ /*adicionar como parametros mes e ano para localizacao na agenda? */
-        List<Atendimento> atendimentos= Agenda.getAtendimentos(mes, ano); 
+        List<Atendimento> atendimentos= agenda.getAtendimentos(mes, ano); 
         double ganhos=0;
 
         for (int i = 0; i < atendimentos.size(); i++) {
             Atendimento atendimento = atendimentos.get(i);
-            ganhos+=(atendimento.getValorConsulta()); /*Valor corresponde ao preco total da consulta*/
+            ganhos+=(atendimento.valorFinal()); /*Valor corresponde ao preco total da consulta*/
         }
         return ganhos;
     }
 
     public double calcularGastos(int mes,int ano){
-        List<Atendimento> atendimentos= Agenda.getAtendimentos(mes, ano); 
+        List<Atendimento> atendimentos= agenda.getAtendimentos(mes, ano); 
         double gastos=0;
 
         for (int i = 0; i < atendimentos.size(); i++) {
@@ -35,8 +42,8 @@ public class Financeiro {
         return gastos;
     }
 
-    public double calcularBalanco(){
-        return calcularGanhos()-calcularGastos();
+    public double calcularBalanco(int mes, int ano){
+        return calcularGanhos(mes, ano)-calcularGastos(mes, ano);
     }
 
     public void gerarRelatorioMensal(int ano){
