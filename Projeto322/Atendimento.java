@@ -4,7 +4,7 @@ import java.time.LocalDate;
 public class Atendimento {
    private LocalDate data;
    private Procedimento procedimento;
-   private String paciente;
+   private Paciente paciente;
 
 
    public Atendimento (LocalDate data){
@@ -24,7 +24,7 @@ public class Atendimento {
    }
 
 
-   public String getPaciente(){
+   public Paciente getPaciente(){
        return paciente;
   }
 

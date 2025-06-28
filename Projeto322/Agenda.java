@@ -13,7 +13,6 @@ public class Agenda {
 
    public void agendar (LocalDate data, Procedimento procedimento){
        Atendimento a = atendimentos.getOrDefault(data, new Atendimento(data));
-       a.adicionarProcedimento(procedimento);
        atendimentos.put(data,a);
    }
   
