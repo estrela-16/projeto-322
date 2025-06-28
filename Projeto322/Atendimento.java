@@ -5,12 +5,17 @@ public class Atendimento {
    private LocalDate data;
    private Procedimento procedimento;
    private Paciente paciente;
+   private StatusConsulta statusC;
+   private StatusPagamento statusP;
 
 
-   public Atendimento (LocalDate data){
+   public Atendimento(LocalDate data, Procedimento procedimento, Paciente paciente,
+                   StatusConsulta statusC, StatusPagamento statusP){
        this.data = data;
        this.procedimento  = procedimento;
        this.paciente = paciente;
+       this.statusC=statusC;
+       this.statusP=statusP;
    }
 
 
@@ -27,12 +32,15 @@ public class Atendimento {
    public Paciente getPaciente(){
        return paciente;
   }
+  
 
-   public double valorFinal ( Procedimento procedimentos){
-       double valorFixo = 0;
-       double valorEquipamentos = procedimentos.calcularValor();
-       double valorFInal = valorFixo + valorEquipamentos;
-       return valorFInal;
+
+
+   public double valorFinal ( CalculodeGastos calculadora){
+       double valorFixo = calculadora.gastosTotais();
+       double valorEquipamentos = procedimento.calcularValor();
+       return valorFixo + valorEquipamentos;
+       
    }
 
 
