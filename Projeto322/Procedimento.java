@@ -1,50 +1,47 @@
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Procedimento {
-   private String nome;
-   private List<Materiais> material;
+    private String nome;
+    private String especialidade;
+    private List<Materiais> materiais;
 
+    public Procedimento(String nome, String especialidade) {
+        this.nome = nome;
+        this.especialidade = especialidade;
+        this.materiais = new ArrayList<>();
+    }
 
-   public Procedimento(String nome) {
-       this.nome = nome;
-       this.material = new ArrayList<>(); /* lista de objetos Materiais */
-   }
+    public String getNome() {
+        return nome;
+    }
 
+    public String getEspecialidade() {
+        return especialidade;
+    }
 
-   public String getNome(){
-       return nome;
-   }
+    public List<Materiais> getMateriais() {
+        return materiais;
+    }
 
+    public void adicionarMaterial(Materiais m) {
+        materiais.add(m);
+    }
 
-   public List<Materiais>getMateriais(){
-       return material;
-   }
+    public void removerMaterial(Materiais m) {
+        materiais.remove(m);
+    }
 
+    public double calcularCustoTotal() {
+        double total = 0;
+        for (Materiais m : materiais) {
+            total += m.getValor();
+        }
+        return total;
+    }
 
-   public void adicionarMaterial (Materiais objeto){
-       this.material.add(objeto);
-   }
-
-
-   public void removerMaterial (Materiais objeto){
-       this.material.remove(objeto);
-   }
-
-
-    public double calcularValor(){
-       double total = 0;
-       for(int i = 0; i <  material.size(); i++){
-           total += material.get(i).getValor(); /* pega o Material na lista e dele pega o valor */
-
-
-       }
-       return total;
-   }
-
-
-
-
-
+    @Override
+    public String toString() {
+        return nome + " (" + especialidade + ") - Custo total: R$" + String.format("%.2f", calcularCustoTotal());
+    }
 }
