@@ -17,5 +17,9 @@ public class Paciente extends Pessoa {
         return historico;
     }
 
+    public void setHistorico(List<Procedimento> historico) {
+        this.historico = historico;
+    }
+
     
 }

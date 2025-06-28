@@ -1,25 +1,24 @@
 public class Pessoa {
   
     private String nome;
-    private int cpf;
-    private int telefone;
+    private String cpf;
+    private String telefone;
 
-    public Pessoa(String nome, int cpf, int telefone){
-        nome = this.nome;
-        cpf = this.cpf;
-        telefone = this.telefone;
-
+    public Pessoa(String nome, String cpf, String telefone){
+        this.nome = nome;
+        this.cpf = cpf;
+        this.telefone = telefone;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public int getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
-    public int getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
 
@@ -27,12 +26,11 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public void setCpf(int cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
-    public void setTelefone(int numero_telefone) {
-        this.telefone = numero_telefone;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
-
 }
