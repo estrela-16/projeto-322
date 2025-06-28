@@ -1,4 +1,8 @@
+package Principal;
 import java.time.LocalDate;
+
+import StatusConsulta;
+import StatusPagamento;
 
 
 public class Atendimento {
