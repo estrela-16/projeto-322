@@ -1,17 +1,15 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Atendimento {
    private LocalDate data;
-   private List <Procedimento> procedimentos;
+   private Procedimento procedimento;
    private String paciente;
 
 
    public Atendimento (LocalDate data){
        this.data = data;
-       this.procedimentos  = new ArrayList<>();
+       this.procedimento  = procedimento;
        this.paciente = paciente;
    }
 
@@ -21,25 +19,14 @@ public class Atendimento {
    }
 
 
-   public List<Procedimento> getProcedimentos() {
-       return procedimentos;
+   public Procedimento getProcedimentos() {
+       return procedimento;
    }
 
 
    public String getPaciente(){
        return paciente;
   }
-   public void adicionarProcedimento(Procedimento p) {
-       procedimentos.add(p);
-   }
-
-
-
-
-   public void removerProcedimento(Procedimento p) {
-       procedimentos.remove(p);
-   }
-
 
    public double valorFinal ( Procedimento procedimentos){
        double valorFixo = 0;
