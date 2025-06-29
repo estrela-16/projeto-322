@@ -11,28 +11,21 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO (Data Access Object) para a entidade Procedimento.
- * Gerencia as operações de banco de dados para os procedimentos oferecidos.
- * Nota: Este DAO gerencia apenas a tabela 'procedimentos'. A associação com
- * 'materiais' requer uma lógica de tabela de junção separada.
- */
 public class ProcedimentoDAO {
 
     /**
      * Insere um novo procedimento no banco de dados.
-     *
-     * @param procedimento O objeto Procedimento a ser inserido.
      */
     public void inserir(Procedimento procedimento) {
-        // A tabela não tem 'especialidade', então não a incluímos no SQL.
-        String sql = "INSERT INTO procedimentos (nome, preco) VALUES (?, ?)";
+        // CORREÇÃO: Adicionada a coluna 'especialidade'
+        String sql = "INSERT INTO procedimentos (nome, especialidade, preco) VALUES (?, ?, ?)";
         
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, procedimento.getNome());
-            stmt.setDouble(2, procedimento.getPreco());
+            stmt.setString(2, procedimento.getEspecialidade());
+            stmt.setDouble(3, procedimento.getPreco()); // Agora usa o getter simples
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -53,8 +46,6 @@ public class ProcedimentoDAO {
 
     /**
      * Busca todos os procedimentos cadastrados no banco de dados.
-     *
-     * @return Uma lista de objetos Procedimento.
      */
     public List<Procedimento> buscarTodos() {
         List<Procedimento> procedimentos = new ArrayList<>();
@@ -65,12 +56,12 @@ public class ProcedimentoDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Criamos o objeto Procedimento. A especialidade não vem do banco, fica como null.
+                // CORREÇÃO: Mapeando os dados corretamente
                 Procedimento procedimento = new Procedimento(
                     rs.getInt("id"),
                     rs.getString("nome"),
                     rs.getString("especialidade"),
-                    rs.getDouble("preço")
+                    rs.getDouble("preco") // CORREÇÃO: Nome da coluna sem cedilha
                 );
                 procedimentos.add(procedimento);
             }
@@ -82,8 +73,6 @@ public class ProcedimentoDAO {
     
     /**
      * Atualiza os dados de um procedimento de forma dinâmica.
-     *
-     * @param procedimento O objeto Procedimento contendo o ID e os campos a serem alterados.
      */
     public void atualizar(Procedimento procedimento) {
         StringBuilder sqlBuilder = new StringBuilder("UPDATE procedimentos SET ");
@@ -92,6 +81,11 @@ public class ProcedimentoDAO {
         if (procedimento.getNome() != null && !procedimento.getNome().isEmpty()) {
             sqlBuilder.append("nome = ?, ");
             params.add(procedimento.getNome());
+        }
+        // CORREÇÃO: Adicionado o campo 'especialidade' à atualização
+        if (procedimento.getEspecialidade() != null && !procedimento.getEspecialidade().isEmpty()) {
+            sqlBuilder.append("especialidade = ?, ");
+            params.add(procedimento.getEspecialidade());
         }
         if (procedimento.getPreco() != 0) {
             sqlBuilder.append("preco = ?, ");
@@ -120,7 +114,6 @@ public class ProcedimentoDAO {
             } else {
                 System.out.println("Nenhum procedimento encontrado com o ID fornecido.");
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar procedimento: " + e.getMessage());
         }
@@ -128,8 +121,6 @@ public class ProcedimentoDAO {
 
     /**
      * Deleta um procedimento do banco de dados com base no seu ID.
-     *
-     * @param id O ID do procedimento a ser deletado.
      */
     public void deletar(int id) {
         String sql = "DELETE FROM procedimentos WHERE id = ?";
@@ -145,7 +136,6 @@ public class ProcedimentoDAO {
             } else {
                 System.out.println("Nenhum procedimento encontrado com o ID fornecido para deleção.");
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao deletar procedimento: " + e.getMessage());
         }
