@@ -6,11 +6,20 @@ public class Dentista extends Pessoa {
 
     public Dentista(String nome, String cpf, String telefone, String cro) {
         super(nome, cpf, telefone);
+        this.id=0;
         this.cro=cro;
+    }
+
+    // Construtor para RECUPERAR um Dentista do banco de dados (com ID já definido)
+    public Dentista(int id, String nome, String cpf, String dadosBancarios, String cro) {
+        super(nome, cpf, dadosBancarios);
+        this.id = id;
+        this.cro = cro;
     }
 
     public Dentista() { // Construtor vazio. Frequentemente usado por DAOs para criar um objeto e depois preencher seus atributos com os dados do ResultSet.
         super();
+        this.id=0;
     }
 
     public int getId() {
