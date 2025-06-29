@@ -17,11 +17,12 @@ public class DentistaDAO {
     public void inserir(Dentista dentista) {
         // Adiciona RETURN_GENERATED_KEYS para informar ao PreparedStatement
         // que queremos recuperar as chaves geradas automaticamente (o ID)
-        String sql = "INSERT INTO dentistas (nome, cpf, cro, dados_bancarios) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO dentistas (nome, cpf, telefone, cro) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, dentista.getNome());
             stmt.setString(2, dentista.getCpf());
+            stmt.setString(3, dentista.getTelefone());
             stmt.setString(3, dentista.getCro());
             stmt.executeUpdate(); // Executa a inserção
 
@@ -52,7 +53,7 @@ public class DentistaDAO {
                     rs.getInt("id"),
                     rs.getString("nome"),
                     rs.getString("cpf"),
-                    rs.getString("dados_bancarios"),
+                    rs.getString("telefone"),
                     rs.getString("cro")
                 );
                 dentistas.add(dentista);
@@ -65,13 +66,13 @@ public class DentistaDAO {
 
     // Métodos para atualizar e deletar podem ser adicionados aqui
     public void atualizar(Dentista dentista) {
-        String sql = "UPDATE dentistas SET nome = ?, cpf = ?, cro = ?, dados_bancarios = ? WHERE id = ?";
+        String sql = "UPDATE dentistas SET nome = ?, cpf = ?, telefone = ?, cro = ? WHERE id = ?";
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, dentista.getNome());
             stmt.setString(2, dentista.getCpf());
-            stmt.setString(3, dentista.getCro());
-            stmt.setInt(5, dentista.getId());
+            stmt.setString(3, dentista.getTelefone());
+            stmt.setString(5, dentista.getCro());
             stmt.executeUpdate();
             System.out.println("Dentista atualizado com sucesso!");
         } catch (SQLException e) {

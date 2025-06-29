@@ -6,7 +6,7 @@ public class Dentista extends Pessoa {
 
     public Dentista(String nome, String cpf, String telefone, String cro) {
         super(nome, cpf, telefone);
-        this.id=0;
+        this.id=0;//valor arbitrário pois o Id e definido apenas após adicionar no banoc de dados
         this.cro=cro;
     }
 
@@ -26,7 +26,7 @@ public class Dentista extends Pessoa {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) {//utilizado depois de adicionar o dentista na tabela para definir o seu id
         this.id = id;
     }
 
