@@ -1,4 +1,3 @@
-// Arquivo: Procedimento.java (Versão Final Corrigida)
 package Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +5,7 @@ import java.util.List;
 public class Procedimento {
     private String nome;
     private String especialidade;
-    private List<Materiais> materiais; 
+    private List<Materiais> materiais;
     private CalculodeGastos gastos;
     private int id;
     private double preco;
@@ -40,23 +39,11 @@ public class Procedimento {
         return especialidade;
     }
 
-    // Este é o único getter que você precisa para a lista
     public List<Materiais> getMateriais() {
         return materiais;
     }
 
-    public double getPreco(){    public void setNumeroDeConsultas(int num){
-        this.numerodeconsultas = num;
-    }
-
-    public void setComissao(double comissao){
-        this.comissao = comissao;
-
-    }
-
-    public void setTaxaServico(double servico){
-        this.servico = servico;
-    }
+    public double getPreco(){
         this.preco=this.calcularCustoTotal();
         return this.calcularCustoTotal();
     }
@@ -82,18 +69,7 @@ public class Procedimento {
         for (Materiais m : materiais) {
             total += m.getValor();
         }
-        double taxa;    public void setNumeroDeConsultas(int num){
-        this.numerodeconsultas = num;
-    }
-
-    public void setComissao(double comissao){
-        this.comissao = comissao;
-
-    }
-
-    public void setTaxaServico(double servico){
-        this.servico = servico;
-    }
+        double taxa;
         taxa = gastos.getTaxaServico();
         total = taxa*(total + gastos.gastosTotais());
 
@@ -102,7 +78,6 @@ public class Procedimento {
 
     @Override
     public String toString() {
-        return nome + " (" + especialidade + ") - Preco de custo: R$" + String.format("%.2f", calcularCustoTotal());
+        return nome + " (" + especialidade + ") - Custo total: R$" + String.format("%.2f", calcularCustoTotal());
     }
-
 }
