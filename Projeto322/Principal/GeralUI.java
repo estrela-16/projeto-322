@@ -8,14 +8,14 @@ import javax.swing.table.*;
 public class GeralUI extends JPanel {
     private List<Contas> contas;
     private List<MateriaisComuns> materiaisComuns;
-
+    private ClinicaOdontoGUI clinica;
     private DefaultTableModel contasModel;
     private DefaultTableModel materiaisModel;
 
-    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns) {
+    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns, ClinicaOdontoGUI clinica) {
         this.contas = contas;
         this.materiaisComuns = materiaisComuns;
-
+        this.clinica = clinica;
         setLayout(new BorderLayout());
 
         JPanel conteudo = new JPanel();
@@ -50,7 +50,8 @@ public class GeralUI extends JPanel {
                 calculo.setNumeroDeConsultas(consultas);
                 calculo.setComissao(comissao);
                 calculo.setTaxaServico(taxaServico);
-
+                
+                clinica.atualizarComissaoFinanceiro(comissao);
                 // Calcular gastos totais
                 double gastoTotal = calculo.gastosTotais();
 

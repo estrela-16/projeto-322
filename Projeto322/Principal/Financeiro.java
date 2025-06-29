@@ -24,6 +24,10 @@ public class Financeiro {
         return ganhos;
     }
 
+    public void setPercentualComissao(double percentualComissao) {
+        this.percentualComissao = percentualComissao;
+    }
+
     public double calcularGastos(int mes,int ano){
         List<Atendimento> atendimentos= agenda.getAtendimentos(mes, ano); 
         double gastos=0;

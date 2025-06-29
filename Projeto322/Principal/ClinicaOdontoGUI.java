@@ -56,7 +56,7 @@ public class ClinicaOdontoGUI extends JFrame {
         contas = new ArrayList<>();
         materiaiscomuns = new ArrayList<>();
         agenda = new Agenda();
-        financeiro = new Financeiro(agenda, 0.3);
+        financeiro = new Financeiro(agenda, 0);
         gerenciarProcedimento = new GerenciarProcedimento();
 
         tabbedPane = new JTabbedPane();
@@ -99,7 +99,7 @@ public class ClinicaOdontoGUI extends JFrame {
         materiaisPanel = createMateriaisPanel();
         tabbedPane.addTab("Materiais", materiaisPanel);
 
-        geralPanel = new GeralUI(contas, materiaiscomuns);
+        geralPanel = new GeralUI(contas, materiaiscomuns, this);
         tabbedPane.addTab("Gastos Gerais", geralPanel);
 
         tabbedPane.addChangeListener(e -> {
@@ -211,7 +211,9 @@ public class ClinicaOdontoGUI extends JFrame {
             procedimentosTableModel.addRow(new Object[]{p.getNome(), p.getEspecialidade(), nomesMateriais});
         }
     }
-
+    public void atualizarComissaoFinanceiro(double novaComissao) {
+        financeiro.setPercentualComissao(novaComissao);
+    }
     private JPanel createFinanceiroPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
