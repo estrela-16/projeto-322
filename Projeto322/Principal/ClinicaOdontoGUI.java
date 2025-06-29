@@ -19,6 +19,7 @@ public class ClinicaOdontoGUI extends JFrame {
     private JPanel procedimentosPanel;
     private JPanel financeiroPanel;
     private JPanel materiaisPanel;
+    private JPanel geralPanel;
 
     private JTable pacientesTable;
     private DefaultTableModel pacientesTableModel;
@@ -30,6 +31,8 @@ public class ClinicaOdontoGUI extends JFrame {
     private List<Paciente> pacientes;
     private List<Dentista> dentistas;
     private List<Materiais> materiais;
+    private List<Contas> contas;
+    private List<MateriaisComuns> materiaiscomuns;
 
     private GerenciarProcedimento gerenciarProcedimento;
     private Agenda agenda;
@@ -45,6 +48,8 @@ public class ClinicaOdontoGUI extends JFrame {
         pacientes = new ArrayList<>();
         dentistas = new ArrayList<>();
         materiais = new ArrayList<>();
+        contas = new ArrayList<>();
+        materiaiscomuns = new ArrayList<>();
         agenda = new Agenda();
         financeiro = new Financeiro(agenda, 0.3);
 
@@ -87,6 +92,9 @@ public class ClinicaOdontoGUI extends JFrame {
 
         materiaisPanel = createMateriaisPanel();
         tabbedPane.addTab("Materiais", materiaisPanel);
+
+        geralPanel = new GeralUI(contas, materiaiscomuns);
+        tabbedPane.addTab("Gastos Gerais", geralPanel);
     }
     
        private JPanel createFinanceiroPanel() {

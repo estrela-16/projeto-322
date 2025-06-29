@@ -5,9 +5,9 @@ import java.util.List;
 public class CalculodeGastos {
     private List<MateriaisComuns> materialcomum;
     private int numerodeconsultas;
-    private double luz;
-    private double agua;
-    private double aluguel;
+    private List<Contas>conta;
+
+
 
     public CalculodeGastos(){
         this.materialcomum = new ArrayList<>();
@@ -17,16 +17,8 @@ public class CalculodeGastos {
         return materialcomum;
     }
 
-    public double getAgua(){
-        return agua;
-    }
-
-    public double getLuz(){
-        return luz;
-    }
-
-    public double getAluguel(){
-        return aluguel;
+    public List<Contas> getConta(){
+        return conta;
     }
 
     public double CalculodeMateriais(){
@@ -38,16 +30,18 @@ public class CalculodeGastos {
         return total;
     }
 
-    public double Contas(double luz, double agua, double aluguel){
+    public double Contas(){
         double total = 0;
-        total = (luz+agua+aluguel)/numerodeconsultas;
+        for(int i = 0; i < conta.size(); i++){
+            total += conta.get(i).getValor();
+        }
         return total;
     }
 
     public double gastosTotais(){
         double total = 0;
         double contaMatComum = CalculodeMateriais();
-        double contas = Contas(luz, agua, aluguel);
+        double contas = Contas();
         total = contaMatComum +contas;
 
         return total;
