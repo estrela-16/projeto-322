@@ -35,7 +35,7 @@ public class Atendimento {
   }
   
 
-   public double getCustoMateriais(){
+   public double getCustoMateriais(){ /*custo dos materiais + manutencao do consultorio */
         return procedimento.calcularCustoTotal();
    }
 
@@ -45,6 +45,4 @@ public class Atendimento {
        return valorFixo + valorEquipamentos;
        
    }
-
-
 }

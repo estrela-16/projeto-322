@@ -1,5 +1,4 @@
 package Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Financeiro {
@@ -9,10 +8,9 @@ public class Financeiro {
     Agenda agenda;
     CalculodeGastos calculadora;
 
-    public Financeiro(Agenda agenda, double percentual, double despesas) {
+    public Financeiro(Agenda agenda, double percentual) {
         this.agenda = agenda;
         this.percentualComissao = percentual;
-        this.gastosGerais = despesas;
     }
 
     public double calcularGanhos(int mes, int ano){ /*adicionar como parametros mes e ano para localizacao na agenda? */
@@ -38,8 +36,6 @@ public class Financeiro {
 
         double salarioDentistas= ganhos * percentualComissao;
         gastos+=salarioDentistas;
-
-        gastos+=gastosGerais*atendimentos.size(); /*Adiciona os valores dos gastos gerais*/
                                              
         return gastos;
     }
@@ -48,15 +44,21 @@ public class Financeiro {
         return calcularGanhos(mes, ano)-calcularGastos(mes, ano);
     }
 
-    public void gerarRelatorioMensal(int ano){
-        for (int mes = 0; mes <= 12; mes++){
-            double ganho = calcularGanhos(mes,ano);
-            double gasto = calcularGastos(mes,ano);
+    public String gerarRelatorioMensal(int ano){
+        StringBuilder relatorio = new StringBuilder();
 
-            double lucro=ganho-gasto;
+        relatorio.append(String.format("--- Relatório Financeiro Anual para %d ---%n%n", ano));
+        relatorio.append(String.format("%-10s %-15s %-15s %-15s%n", "Mês", "Ganhos (R$)", "Gastos (R$)", "Lucro (R$)"));
+        relatorio.append("----------------------------------------------------------%n");
 
-             System.out.printf("Mês %02d/%d | Ganho: R$%.2f | Gasto: R$%.2f | Lucro: R$%.2f%n", 
-                              mes, ano, ganho, gasto, lucro);
+        for (int mes = 1; mes <= 12; mes++){
+            double ganho = calcularGanhos(mes, ano);
+            double gasto = calcularGastos(mes, ano);
+            double lucro = ganho - gasto;
+
+            relatorio.append(String.format("Mês %02d/%d %-15.2f %-15.2f %-15.2f%n",
+                             mes, ano, ganho, gasto, lucro));
         }
+        return relatorio.toString();
     }
 }
