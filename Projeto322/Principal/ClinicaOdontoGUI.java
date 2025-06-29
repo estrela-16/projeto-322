@@ -101,6 +101,9 @@ public class ClinicaOdontoGUI extends JFrame {
 
         JTextArea relatorioArea = new JTextArea(20, 50);
         relatorioArea.setEditable(false);
+        Font fonteAtual = relatorioArea.getFont();
+        relatorioArea.setFont(fonteAtual.deriveFont(22f)); 
+
         JScrollPane scrollPane = new JScrollPane(relatorioArea);
         panel.add(scrollPane, BorderLayout.CENTER);
 
