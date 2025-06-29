@@ -7,13 +7,29 @@ public class Procedimento {
     private String especialidade;
     private List<Materiais> materiais;
     private CalculodeGastos gastos;
+    private int id;
+    private double preco;
 
     public Procedimento(String nome, String especialidade) {
         this.nome = nome;
         this.especialidade = especialidade;
         this.materiais = new ArrayList<>();
-        this.gastos = gastos;
     }
+
+    // Construtor para recuperar do banco de dados
+    public Procedimento(int id, String nome, String especialidade, double preco) {
+        this.id = id;
+        this.nome = nome;
+        this.especialidade = especialidade;
+        this.preco=preco;
+        this.materiais = new ArrayList<>();
+    }
+
+    // Construtor vazio para atualizações
+    public Procedimento() {
+        this.materiais = new ArrayList<>();
+    }
+
 
     public String getNome() {
         return nome;
@@ -25,6 +41,19 @@ public class Procedimento {
 
     public List<Materiais> getMateriais() {
         return materiais;
+    }
+
+    public double getPreco(){
+        this.preco=this.calcularCustoTotal();
+        return this.calcularCustoTotal();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void adicionarMaterial(Materiais m) {

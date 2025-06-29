@@ -44,7 +44,8 @@ public class CriadorTabelas {
         String sqlProcedimentos = "CREATE TABLE IF NOT EXISTS procedimentos (" +
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                                   "nome TEXT NOT NULL UNIQUE," +
-                                  "preco_sugerido REAL NOT NULL" +
+                                  "especialidade TEXT NOT NULL," +
+                                  "preco REAL NOT NULL" +
                                   ");";
 
         String sqlAtendimentos = "CREATE TABLE IF NOT EXISTS atendimentos (" +

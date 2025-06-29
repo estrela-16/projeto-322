@@ -25,8 +25,8 @@ public class HistoricoDAO {
      * return true se a inserção for bem-sucedida, false caso contrário.
      */
     public boolean inserir(Historico historico) {
-        // A coluna 'problemas_passados' corresponde ao campo 'descricao'
-        String sql = "INSERT INTO historicos (paciente_id, problemas_passados) VALUES (?, ?)";
+        // A coluna 'descricao' corresponde ao campo 'descricao'
+        String sql = "INSERT INTO historicos (paciente_id, descricao) VALUES (?, ?)";
         
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -71,7 +71,7 @@ public class HistoricoDAO {
                 historico = new Historico();
                 historico.setId(rs.getInt("id"));
                 historico.setPacienteId(rs.getInt("paciente_id"));
-                historico.setDescricao(rs.getString("problemas_passados"));
+                historico.setDescricao(rs.getString("descricao"));
                 
                 // Após encontrar o histórico, busca as imagens associadas
                 historico.setCaminhosImagens(buscarImagens(historico.getId()));
@@ -89,7 +89,7 @@ public class HistoricoDAO {
      * historico O objeto Historico com o ID e a nova descrição.
      */
     public void atualizar(Historico historico) {
-        String sql = "UPDATE historicos SET problemas_passados = ? WHERE id = ?";
+        String sql = "UPDATE historicos SET descricao = ? WHERE id = ?";
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
