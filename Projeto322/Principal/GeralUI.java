@@ -51,7 +51,12 @@ public class GeralUI extends JPanel {
                 calculo.setComissao(comissao);
                 calculo.setTaxaServico(taxaServico);
 
-                // Salvo internamente - sem exibir resultado
+                // Calcular gastos totais
+                double gastoTotal = calculo.gastosTotais();
+
+                // Exibir resultado para o usuário
+                JOptionPane.showMessageDialog(this, String.format("Gasto Total por consulta: R$ %.2f", gastoTotal));
+
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Insira valores válidos para consultas, comissão e taxa de serviço.");
             }

@@ -7,6 +7,7 @@ public class Financeiro {
     double gastosGerais; /*valor fixo por consulta pra manutencao do consultorio */
     Agenda agenda;
     CalculodeGastos calculadora;
+    Procedimento procedimento;
 
     public Financeiro(Agenda agenda, double percentual) {
         this.agenda = agenda;
@@ -19,7 +20,7 @@ public class Financeiro {
 
         for (int i = 0; i < atendimentos.size(); i++) {
             Atendimento atendimento = atendimentos.get(i);
-            ganhos+=(atendimento.valorFinal(calculadora)); /*Valor corresponde ao preco total da consulta*/
+            ganhos+=(procedimento.calcularCustoTotal()); /*Valor corresponde ao preco total da consulta*/
         }
         return ganhos;
     }

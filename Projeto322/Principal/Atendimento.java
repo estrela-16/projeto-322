@@ -48,10 +48,4 @@ public class Atendimento {
         return procedimento.calcularCustoTotal();
    }
 
-   public double valorFinal ( CalculodeGastos calculadora){
-       double valorFixo = calculadora.gastosTotais();
-       double valorEquipamentos = getCustoMateriais();
-       return valorFixo + valorEquipamentos;
-       
-   }
 }
