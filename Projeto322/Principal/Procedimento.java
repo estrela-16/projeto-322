@@ -52,7 +52,7 @@ public class Procedimento {
 
     @Override
     public String toString() {
-        return nome + " (" + especialidade + ") - Custo total: R$" + String.format("%.2f", calcularCustoTotal());
+        return nome + " (" + especialidade + ") - Preco de custo: R$" + String.format("%.2f", calcularCustoTotal());
     }
 
 }
