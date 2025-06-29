@@ -10,17 +10,15 @@ public class CriadorTabelas {
                               "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                               "nome TEXT NOT NULL," +
                               "cpf TEXT UNIQUE NOT NULL," +
+                              "telefone TEXT" +
                               "cro TEXT UNIQUE NOT NULL," +
-                              "dados_bancarios TEXT" +
                               ");";
 
         String sqlPacientes = "CREATE TABLE IF NOT EXISTS pacientes (" +
                               "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                               "nome TEXT NOT NULL," +
                               "cpf TEXT UNIQUE NOT NULL," +
-                              "endereco TEXT," +
                               "telefone TEXT," +
-                              "email TEXT" +
                               ");";
 
         String sqlHistorico = "CREATE TABLE IF NOT EXISTS historicos (" +
