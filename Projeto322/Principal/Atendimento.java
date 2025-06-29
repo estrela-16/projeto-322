@@ -35,11 +35,13 @@ public class Atendimento {
   }
   
 
-
+   public double getCustoMateriais(){
+        return procedimento.calcularCustoTotal();
+   }
 
    public double valorFinal ( CalculodeGastos calculadora){
        double valorFixo = calculadora.gastosTotais();
-       double valorEquipamentos = procedimento.calcularValor();
+       double valorEquipamentos = getCustoMateriais();
        return valorFixo + valorEquipamentos;
        
    }

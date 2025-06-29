@@ -7,6 +7,7 @@ public class Financeiro {
     double percentualComissao; /*porecentagem ganha pelos dentistas por consulta */
     double gastosGerais; /*valor fixo por consulta pra manutencao do consultorio */
     Agenda agenda;
+    CalculodeGastos calculadora;
 
     public Financeiro(Agenda agenda, double percentual, double despesas) {
         this.agenda = agenda;
@@ -20,7 +21,7 @@ public class Financeiro {
 
         for (int i = 0; i < atendimentos.size(); i++) {
             Atendimento atendimento = atendimentos.get(i);
-            ganhos+=(atendimento.valorFinal()); /*Valor corresponde ao preco total da consulta*/
+            ganhos+=(atendimento.valorFinal(calculadora)); /*Valor corresponde ao preco total da consulta*/
         }
         return ganhos;
     }
@@ -33,7 +34,7 @@ public class Financeiro {
             Atendimento atendimento = atendimentos.get(i);
             gastos+=(atendimento.getCustoMateriais()); /*Valor corresponde aos materiais*/
         }
-        double ganhos = calcularGanhos();
+        double ganhos = calcularGanhos(mes, ano);
 
         double salarioDentistas= ganhos * percentualComissao;
         gastos+=salarioDentistas;
