@@ -47,4 +47,15 @@ public class Atendimento {
         return procedimento.calcularCustoTotal();
    }
 
+   public void mudarStatusDePagamento(){
+    if (statusP != null){
+        if (statusP == StatusPagamento.PAGO){
+            statusP = StatusPagamento.NAO_PAGO;
+        } else {
+            statusP = StatusPagamento.PAGO;
+        }
+
+    }
+   }
+
 }
