@@ -50,10 +50,12 @@ public class CriadorTabelas {
 
         String sqlAtendimentos = "CREATE TABLE IF NOT EXISTS atendimentos (" +
                                  "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                 "data TEXT NOT NULL," +
+                                 "horario TEXT NOT NULL," +
+                                 "status_pagamento TEXT NOT NULL," +
                                  "dentista_id INTEGER NOT NULL," +
                                  "paciente_id INTEGER NOT NULL," +
                                  "procedimento_id INTEGER NOT NULL," +
-                                 "horario TEXT NOT NULL," +
                                  "FOREIGN KEY (dentista_id) REFERENCES dentistas(id)," +
                                  "FOREIGN KEY (paciente_id) REFERENCES pacientes(id)," +
                                  "FOREIGN KEY (procedimento_id) REFERENCES procedimentos(id)" +
