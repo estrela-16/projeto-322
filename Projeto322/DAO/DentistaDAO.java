@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DentistaDAO {
 
-    //indeser dentista no BD
+    //insere dentista no BD
     public void inserir(Dentista dentista) {
         // Adiciona RETURN_GENERATED_KEYS para informar ao PreparedStatement
         // que queremos recuperar as chaves geradas automaticamente (o ID)

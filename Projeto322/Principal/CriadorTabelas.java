@@ -18,7 +18,7 @@ public class CriadorTabelas {
                               "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                               "nome TEXT NOT NULL," +
                               "cpf TEXT UNIQUE NOT NULL," +
-                              "telefone TEXT," +
+                              "telefone TEXT" +
                               ");";
 
         String sqlHistorico = "CREATE TABLE IF NOT EXISTS historicos (" +

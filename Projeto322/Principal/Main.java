@@ -22,12 +22,10 @@ public class Main {
         Dentista drCarlos = new Dentista("Dr. Carlos Andrade", "111.222.333-44", "(11) 91234-5678", "CRO-SP-12345");
         dentistaDAO.inserir(drCarlos); 
         // Após a inserção, o ID do objeto drCarlos é atualizado automaticamente!
-        System.out.println("ID do Dr. Carlos no banco: " + drCarlos.getId());
 
         // Criando o segundo dentista
         Dentista draAna = new Dentista("Dra. Ana Souza", "555.666.777-88", "(21) 98765-4321", "CRO-RJ-67890");
         dentistaDAO.inserir(draAna);
-        System.out.println("ID da Dra. Ana no banco: " + draAna.getId());
         System.out.println("--------------------------------------\n");
 
         // --- ETAPA 3: LISTANDO TODOS OS DENTISTAS ---
@@ -50,10 +48,23 @@ public class Main {
         // Criamos um objeto "pacote de instruções" apenas com o ID e o novo telefone.
         Dentista atualizacaoCarlos = new Dentista();
         atualizacaoCarlos.setId(drCarlos.getId()); // Usamos o ID que já temos
-        atualizacaoCarlos.setTelefone("(11) 99999-8888");
+        atualizacaoCarlos.setTelefone("JABA");
 
         dentistaDAO.atualizar(atualizacaoCarlos);
         System.out.println("------------------------------------------------\n");
+
+        List<Dentista> todos = dentistaDAO.buscarTodos();
+        for (Dentista d : todos) {
+            System.out.println(
+                "ID: " + d.getId() + 
+                " | Nome: " + d.getNome() + 
+                " | Telefone: " + d.getTelefone() + 
+                " | CRO: " + d.getCro()
+            );
+        }
+
+        System.out.println("------------------------------------------------\n");
+
 
         // --- ETAPA 5: DELETANDO UM DENTISTA ---
         // Vamos remover a Dra. Ana do sistema.
