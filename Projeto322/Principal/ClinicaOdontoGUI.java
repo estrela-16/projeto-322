@@ -520,14 +520,28 @@ public class ClinicaOdontoGUI extends JFrame {
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, new Object[]{"Sim", "Não"}, "Não"
                 );
+
                 if (resposta == JOptionPane.YES_OPTION && row < materiais.size()) {
-                    materiais.remove(row);
-                    atualizarTabelaMateriais();
+                    Materiais materialSelecionado = materiais.get(row);
+
+                    boolean estaEmUso = gerenciarProcedimento.getProcedimentos().stream()
+                        .anyMatch(p -> p.getMateriais().contains(materialSelecionado));
+
+                    if (estaEmUso) {
+                        JOptionPane.showMessageDialog(button,
+                            "Este material está sendo usado em um procedimento e não pode ser removido.",
+                            "Aviso", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        materiais.remove(row);
+                        atualizarTabelaMateriais();
+                        atualizarListaMateriaisProcedimentos(); // também atualiza a JList de materiais
+                    }
                 }
             }
             clicked = false;
             return "⋮";
         }
+
 
         @Override
         public boolean stopCellEditing() {

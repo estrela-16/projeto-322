@@ -1,13 +1,12 @@
 package Principal;
-public enum StatusConsulta {
+public enum StatusPagamento {
     
-    AGENDADA("Verde"),
-    REALIZADA("Vermelha"),
-    CANCELADA("Cinza");
+    PAGO("Verde"),
+    NAO_PAGO("Vermelha");
     
     private final String cor;
 
-    StatusConsulta(String cor) {
+    StatusPagamento(String cor) {
         this.cor = cor;
     }
 

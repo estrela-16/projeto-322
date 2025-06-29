@@ -8,17 +8,16 @@ public class Atendimento {
    private Paciente paciente;
    private String horario;
    private Dentista dentista;
-   private StatusConsulta statusC;
+   private StatusPagamento statusP;
 
 
-    public Atendimento(LocalDate data, String horario, Procedimento procedimento, Paciente paciente,
-                   Dentista dentista, StatusConsulta statusC) {
+    public Atendimento(LocalDate data, String horario, Procedimento procedimento, Paciente paciente, Dentista dentista, StatusPagamento statusP) {
         this.data = data;
         this.horario = horario;
         this.procedimento = procedimento;
         this.paciente = paciente;
         this.dentista = dentista;
-        this.statusC = statusC;
+        this.statusP = statusP;
     }
 
    public LocalDate getData(){
