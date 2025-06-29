@@ -1,3 +1,4 @@
+package Principal;
 public enum StatusConsulta {
     
     AGENDADA("Verde"),

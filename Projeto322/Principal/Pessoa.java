@@ -11,6 +11,10 @@ public class Pessoa {
         this.telefone = telefone;
     }
 
+    public Pessoa() {
+        //TODO Auto-generated constructor stub
+    }
+
     public String getNome() {
         return nome;
     }

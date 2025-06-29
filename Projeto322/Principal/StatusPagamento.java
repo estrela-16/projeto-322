@@ -1,3 +1,4 @@
+package Principal;
 public enum StatusPagamento {
     
     PAGA ("VERDE"),
