@@ -6,19 +6,29 @@ public class CalculodeGastos {
     private List<MateriaisComuns> materialcomum;
     private int numerodeconsultas;
     private List<Contas>conta;
-
+    private double comissao;
+    private double servico;
 
 
     public CalculodeGastos(){
         this.materialcomum = new ArrayList<>();
+        this.conta = new ArrayList<>();
     }
 
     public List<MateriaisComuns>getMateriaisComunses(){
         return materialcomum;
     }
 
+    public double getComissao(){
+        return comissao;
+    }
+
     public List<Contas> getConta(){
         return conta;
+    }
+
+    public double getTaxaServico(){
+        return servico;
     }
 
     public double CalculodeMateriais(){
@@ -28,6 +38,17 @@ public class CalculodeGastos {
          }
          total = total/numerodeconsultas;
         return total;
+    } 
+    public void setNumeroDeConsultas(int num) {
+        this.numerodeconsultas = num;
+    }
+
+    public void setComissao(double comissao) {
+        this.comissao = comissao;
+    }
+    
+       public void setTaxaServico(double servico) {
+        this.servico = servico;
     }
 
     public double Contas(){
@@ -35,6 +56,7 @@ public class CalculodeGastos {
         for(int i = 0; i < conta.size(); i++){
             total += conta.get(i).getValor();
         }
+        total = total/numerodeconsultas;
         return total;
     }
 

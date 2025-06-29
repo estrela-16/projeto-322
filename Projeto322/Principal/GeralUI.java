@@ -16,12 +16,49 @@ public class GeralUI extends JPanel {
         this.contas = contas;
         this.materiaisComuns = materiaisComuns;
 
-        // Painel principal com rolagem
         setLayout(new BorderLayout());
 
         JPanel conteudo = new JPanel();
         conteudo.setLayout(new BoxLayout(conteudo, BoxLayout.Y_AXIS));
 
+        // Painel de configurações
+        JPanel configPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        configPanel.setBorder(BorderFactory.createTitledBorder("Configurações de Cálculo"));
+
+        JTextField consultasField = new JTextField(5);
+        JTextField comissaoField = new JTextField(5);
+        JTextField taxaServicoField = new JTextField(5);
+        JButton salvarBtn = new JButton("Salvar");
+
+        configPanel.add(new JLabel("Consultas no mês:"));
+        configPanel.add(consultasField);
+        configPanel.add(new JLabel("Comissão (%):"));
+        configPanel.add(comissaoField);
+        configPanel.add(new JLabel("Taxa de Serviço (%):"));
+        configPanel.add(taxaServicoField);
+        configPanel.add(salvarBtn);
+
+        salvarBtn.addActionListener(e -> {
+            try {
+                int consultas = Integer.parseInt(consultasField.getText());
+                double comissao = Double.parseDouble(comissaoField.getText()) / 100.0;
+                double taxaServico = Double.parseDouble(taxaServicoField.getText()) / 100.0;
+
+                CalculodeGastos calculo = new CalculodeGastos();
+                calculo.getMateriaisComunses().addAll(materiaisComuns);
+                calculo.getConta().addAll(contas);
+                calculo.setNumeroDeConsultas(consultas);
+                calculo.setComissao(comissao);
+                calculo.setTaxaServico(taxaServico);
+
+                // Salvo internamente - sem exibir resultado
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Insira valores válidos para consultas, comissão e taxa de serviço.");
+            }
+        });
+
+        conteudo.add(configPanel);
+        conteudo.add(Box.createVerticalStrut(10));
         conteudo.add(criarPainelContas());
         conteudo.add(Box.createVerticalStrut(20));
         conteudo.add(criarPainelMateriais());
@@ -49,9 +86,8 @@ public class GeralUI extends JPanel {
         colRemover.setCellEditor(new ButtonEditor(new JCheckBox(), contas, contasModel));
         colRemover.setMaxWidth(40);
         JScrollPane scrollContas = new JScrollPane(contasTable);
-        scrollContas.setPreferredSize(new Dimension(600, 150)); // largura e altura ajustáveis
+        scrollContas.setPreferredSize(new Dimension(600, 150));
         contasPanel.add(scrollContas, BorderLayout.CENTER);
-
 
         JPanel inputContas = new JPanel(new FlowLayout());
         JTextField nomeContaField = new JTextField(15);
@@ -91,7 +127,7 @@ public class GeralUI extends JPanel {
 
         materiaisModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", "Quantidade", ""}, 0) {
             public boolean isCellEditable(int row, int col) {
-                return col == 3; // apenas botão de remover
+                return col == 3;
             }
         };
 
@@ -156,11 +192,10 @@ public class GeralUI extends JPanel {
         }
     }
 
-    // Botão de remover (padrão)
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
-            setText("⋮");
+            setText("\u22ee");
             setFont(new Font("SansSerif", Font.PLAIN, 14));
         }
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
@@ -168,7 +203,6 @@ public class GeralUI extends JPanel {
         }
     }
 
-    // Editor botão remover de contas
     private static class ButtonEditor extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
@@ -180,7 +214,7 @@ public class GeralUI extends JPanel {
             super(checkBox);
             this.contas = contas;
             this.model = model;
-            button = new JButton("⋮");
+            button = new JButton("\u22ee");
             button.setFont(new Font("SansSerif", Font.PLAIN, 14));
             button.setOpaque(true);
             button.addActionListener(e -> fireEditingStopped());
@@ -211,7 +245,6 @@ public class GeralUI extends JPanel {
         }
     }
 
-    // Editor botão remover de materiais
     private static class ButtonEditorMateriais extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
@@ -223,7 +256,7 @@ public class GeralUI extends JPanel {
             super(checkBox);
             this.materiais = materiais;
             this.model = model;
-            button = new JButton("⋮");
+            button = new JButton("\u22ee");
             button.setFont(new Font("SansSerif", Font.PLAIN, 14));
             button.setOpaque(true);
             button.addActionListener(e -> fireEditingStopped());

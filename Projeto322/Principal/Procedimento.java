@@ -6,11 +6,13 @@ public class Procedimento {
     private String nome;
     private String especialidade;
     private List<Materiais> materiais;
+    private CalculodeGastos gastos;
 
     public Procedimento(String nome, String especialidade) {
         this.nome = nome;
         this.especialidade = especialidade;
         this.materiais = new ArrayList<>();
+        this.gastos = gastos;
     }
 
     public String getNome() {
@@ -38,6 +40,10 @@ public class Procedimento {
         for (Materiais m : materiais) {
             total += m.getValor();
         }
+        double taxa;
+        taxa = gastos.getTaxaServico();
+        total = taxa*(total + gastos.gastosTotais());
+
         return total;
     }
 

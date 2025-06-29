@@ -21,7 +21,7 @@ public class MateriaisUI extends JFrame {
        setLocationRelativeTo(null);
 
        // Adiciona coluna extra "Remover"
-       tabelaModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
+        tabelaModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
            @Override
            public boolean isCellEditable(int row, int column) {
                return column == 2; // só o botão da coluna 2 é editável (para clicar)
