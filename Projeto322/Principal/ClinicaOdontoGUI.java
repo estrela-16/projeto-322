@@ -42,6 +42,7 @@ public class ClinicaOdontoGUI extends JFrame {
 
         pacientes = new ArrayList<>();
         dentistas = new ArrayList<>();
+        financeiro = new Financeiro(agenda, 0.3); /*percentual ajustavel ganho dentistas*/
 
         tabbedPane = new JTabbedPane();
         createMenuBar(); 
@@ -89,6 +90,24 @@ public class ClinicaOdontoGUI extends JFrame {
         dentistasTableModel = new DefaultTableModel(colunas, 0);
         dentistasTable = new JTable(dentistasTableModel);
         JScrollPane scrollPane = new JScrollPane(dentistasTable);
+
+        dentistasTableModel.addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+
+            if (row >= 0 && column >= 0 && row < dentistas.size()) {
+                Dentista d = dentistas.get(row);
+                Object newValue = dentistasTableModel.getValueAt(row, column);
+
+                switch (column) {
+                    case 0 -> d.setNome((String) newValue);
+                    case 1 -> d.setTelefone((String) newValue);
+                    case 2 -> d.setCpf((String) newValue);
+                    case 3 -> d.setCro((String) newValue);
+                }
+            }
+        }
+        );
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Painel de Cadastro de Dentistas
@@ -129,7 +148,7 @@ public class ClinicaOdontoGUI extends JFrame {
                 return;
             }
 
-            Dentista novoDentista = new Dentista(nome, telefone, cpf, cro);
+            Dentista novoDentista = new Dentista(nome, cpf, telefone, cro);
             dentistas.add(novoDentista);
             atualizarTabelaDentistas();
             nomeField.setText("");
@@ -170,6 +189,23 @@ public class ClinicaOdontoGUI extends JFrame {
         pacientesTableModel = new DefaultTableModel(colunas, 0);
         pacientesTable = new JTable(pacientesTableModel);
         JScrollPane scrollPane = new JScrollPane(pacientesTable);
+        pacientesTableModel.addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+
+            if (row >= 0 && column >= 0 && row < pacientes.size()) {
+                Paciente p = pacientes.get(row);
+                Object newValue = pacientesTableModel.getValueAt(row, column);
+
+                switch (column) {
+                    case 0 -> p.setNome((String) newValue);
+                    case 1 -> p.setTelefone((String) newValue);
+                    case 2 -> p.setCpf((String) newValue);
+                }
+            }
+        }
+        );
+
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Painel de Cadastro de Pacientes
@@ -205,7 +241,7 @@ public class ClinicaOdontoGUI extends JFrame {
                 return;
             }
 
-            Paciente novoPaciente = new Paciente(nome, telefone, cpf);
+            Paciente novoPaciente = new Paciente(nome, cpf, telefone);
             pacientes.add(novoPaciente);
             atualizarTabelaPacientes(); // Atualiza a tabela com o novo paciente
             nomeField.setText("");
