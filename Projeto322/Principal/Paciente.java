@@ -17,6 +17,10 @@ public class Paciente extends Pessoa {
         this.historico = new Historico();
     }
 
+    public Paciente() {
+        super();
+    }
+
     public int getId() {
         return id;
     }

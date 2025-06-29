@@ -17,6 +17,10 @@ public Materiais(int id, String nome, double valor){
   this.valor = valor;
 }
 
+public Materiais(){
+  super();
+}
+
 public int getId() {
         return id;
     }
