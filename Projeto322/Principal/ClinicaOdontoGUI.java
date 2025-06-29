@@ -58,6 +58,7 @@ public class ClinicaOdontoGUI extends JFrame {
         agenda = new Agenda();
         financeiro = new Financeiro(agenda, 0);
         gerenciarProcedimento = new GerenciarProcedimento();
+        gastos= new CalculodeGastos();
 
         tabbedPane = new JTabbedPane();
         createMenuBar();

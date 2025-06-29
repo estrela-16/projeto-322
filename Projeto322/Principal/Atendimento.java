@@ -41,6 +41,11 @@ public class Atendimento implements Id_Banco{
    }
 
    @Override
+    public String toString() {
+        return procedimento.getNome();
+    }
+
+   @Override
    public void setId(int id) {
        this.id = id;
    }

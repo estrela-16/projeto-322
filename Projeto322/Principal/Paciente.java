@@ -41,6 +41,11 @@ public class Paciente extends Pessoa implements Id_Banco{
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return getNome();
+    }
     
     public Historico getHistorico() {
         return historico;
