@@ -1,49 +1,82 @@
 package Principal;
+
+import DAO.DentistaDAO;
+import java.util.List;
+
 public class Main {
+
     public static void main(String[] args) {
-        // Criando uma pessoa
-        Pessoa pessoa1 = new Pessoa("Ana Carolina Vieira Araújo", "52.5881.778-40", "(11) 96966 2996");
         
-        System.out.println("Nome: " + pessoa1.getNome());
-        System.out.println("CPF: " + pessoa1.getCpf());
-        System.out.println("Telefone: " + pessoa1.getTelefone());
-    
-        //gerenciar
-        GerenciarProcedimento gerenciador = new GerenciarProcedimento();
+        // --- ETAPA 1: CRIAÇÃO DO BANCO DE DADOS E TABELAS ---
+        // Isso garantirá que o arquivo .db e as tabelas existam antes de qualquer operação.
+        // Só precisa ser executado uma vez, mas não há problema em chamar sempre.
+        System.out.println("--- 1. Inicializando o Banco de Dados ---");
+        CriadorTabelas.criarTabelas();
+        System.out.println("-----------------------------------------\n");
 
-        Procedimento p1 = new Procedimento("Profilaxia", "Clínica Geral");
-        Procedimento p2 = new Procedimento("Tratamento endodôntico", "Endodontia");
-        Procedimento p3 = new Procedimento("Instalação de aparelho fixo", "Ortodontia");
+        // --- ETAPA 2: INSERINDO NOVOS DENTISTAS ---
+        System.out.println("--- 2. Inserindo novos dentistas ---");
+        DentistaDAO dentistaDAO = new DentistaDAO();
+
+        // Criando o primeiro dentista
+        Dentista drCarlos = new Dentista("Dr. Carlos Andrade", "111.222.333-44", "(11) 91234-5678", "CRO-SP-12345");
+        dentistaDAO.inserir(drCarlos); 
+        // Após a inserção, o ID do objeto drCarlos é atualizado automaticamente!
+        System.out.println("ID do Dr. Carlos no banco: " + drCarlos.getId());
+
+        // Criando o segundo dentista
+        Dentista draAna = new Dentista("Dra. Ana Souza", "555.666.777-88", "(21) 98765-4321", "CRO-RJ-67890");
+        dentistaDAO.inserir(draAna);
+        System.out.println("ID da Dra. Ana no banco: " + draAna.getId());
+        System.out.println("--------------------------------------\n");
+
+        // --- ETAPA 3: LISTANDO TODOS OS DENTISTAS ---
+        System.out.println("--- 3. Listando todos os dentistas cadastrados ---");
+        List<Dentista> todosOsDentistas = dentistaDAO.buscarTodos();
+        for (Dentista d : todosOsDentistas) {
+            System.out.println(
+                "ID: " + d.getId() + 
+                " | Nome: " + d.getNome() + 
+                " | Telefone: " + d.getTelefone() + 
+                " | CRO: " + d.getCro()
+            );
+        }
+        System.out.println("---------------------------------------------------\n");
+
+        // --- ETAPA 4: ATUALIZANDO UM DENTISTA ---
+        // Vamos supor que o Dr. Carlos mudou de telefone.
+        System.out.println("--- 4. Atualizando o telefone do Dr. Carlos ---");
         
-        gerenciador.adicionarProcedimento(p1);
-        gerenciador.adicionarProcedimento(p2);
-        gerenciador.adicionarProcedimento(p3);
+        // Criamos um objeto "pacote de instruções" apenas com o ID e o novo telefone.
+        Dentista atualizacaoCarlos = new Dentista();
+        atualizacaoCarlos.setId(drCarlos.getId()); // Usamos o ID que já temos
+        atualizacaoCarlos.setTelefone("(11) 99999-8888");
 
-        // Exibindo todos os procedimentos cadastrados
-        System.out.println("Procedimentos cadastrados:");
-        for (Procedimento p : gerenciador.getProcedimentos()) {
-            System.out.println("- " + p);
+        dentistaDAO.atualizar(atualizacaoCarlos);
+        System.out.println("------------------------------------------------\n");
+
+        // --- ETAPA 5: DELETANDO UM DENTISTA ---
+        // Vamos remover a Dra. Ana do sistema.
+        System.out.println("--- 5. Deletando a Dra. Ana ---");
+        dentistaDAO.deletar(draAna.getId());
+        System.out.println("--------------------------------\n");
+
+
+        // --- ETAPA 6: LISTANDO NOVAMENTE PARA VER O RESULTADO FINAL ---
+        System.out.println("--- 6. Lista final de dentistas ---");
+        List<Dentista> dentistasFinais = dentistaDAO.buscarTodos();
+        if (dentistasFinais.isEmpty()) {
+            System.out.println("Nenhum dentista cadastrado no momento.");
+        } else {
+            for (Dentista d : dentistasFinais) {
+                System.out.println(
+                    "ID: " + d.getId() + 
+                    " | Nome: " + d.getNome() + 
+                    " | Telefone: " + d.getTelefone() + // Verificando o telefone atualizado
+                    " | CRO: " + d.getCro()
+                );
+            }
         }
-
-        Procedimento restauracao = new Procedimento("Restauração em resina", "Clínica Geral");
-
-        Materiais algodao = new Materiais("Algodão", 0.50);
-        Materiais resina = new Materiais("Resina fotopolimerizável", 25.00);
-        Materiais luvas = new Materiais("Luvas descartáveis", 1.00);
-
-        restauracao.adicionarMaterial(algodao);
-        restauracao.adicionarMaterial(resina);
-        restauracao.adicionarMaterial(luvas);
-
-        System.out.println("Procedimento:");
-        System.out.println(restauracao);
-        System.out.println("\nMateriais utilizados:");
-        for (Materiais m : restauracao.getMateriais()) {
-            System.out.println("- " + m.getNome() + ": R$" + String.format("%.2f", m.getValor()));
-        }
-
+        System.out.println("-------------------------------------\n");
     }
 }
-
-
-
