@@ -161,7 +161,7 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
                     return;
                 }
 
-                Atendimento novo = new Atendimento(data, hora, procedimento, paciente, dentista,StatusConsulta.AGENDADA);
+                Atendimento novo = new Atendimento(data, hora, procedimento, paciente, dentista,StatusPagamento.NAO_PAGO);
 
                 agenda.agendarAtendimento(novo);
                 atualizarCalendario();
