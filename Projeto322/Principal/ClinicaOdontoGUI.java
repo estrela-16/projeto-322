@@ -79,11 +79,42 @@ public class ClinicaOdontoGUI extends JFrame {
         procedimentosPanel = new JPanel();
         tabbedPane.addTab("Procedimentos", procedimentosPanel);
 
-        financeiroPanel = new JPanel();
+        financeiroPanel = createFinanceiroPanel();
         tabbedPane.addTab("Financeiro", financeiroPanel);
 
         materiaisPanel = createMateriaisPanel();
         tabbedPane.addTab("Materiais", materiaisPanel);
+    }
+    
+       private JPanel createFinanceiroPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JLabel anoLabel = new JLabel("Ano:");
+        JTextField anoField = new JTextField(4);
+        JButton gerarRelatorioButton = new JButton("Gerar Relatório Anual");
+
+        inputPanel.add(anoLabel);
+        inputPanel.add(anoField);
+        inputPanel.add(gerarRelatorioButton);
+        panel.add(inputPanel, BorderLayout.NORTH);
+
+        JTextArea relatorioArea = new JTextArea(20, 50);
+        relatorioArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(relatorioArea);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        gerarRelatorioButton.addActionListener(e -> {
+            try {
+                int ano = Integer.parseInt(anoField.getText());
+                String relatorio = financeiro.gerarRelatorioMensal(ano);
+                relatorioArea.setText(relatorio);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Por favor, insira um ano válido.", "Erro de Entrada", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        return panel;
     }
 
     private JPanel createPacientesPanel() {

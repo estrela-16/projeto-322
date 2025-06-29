@@ -49,14 +49,13 @@ public class Financeiro {
 
         relatorio.append(String.format("--- Relatório Financeiro Anual para %d ---%n%n", ano));
         relatorio.append(String.format("%-10s %-15s %-15s %-15s%n", "Mês", "Ganhos (R$)", "Gastos (R$)", "Lucro (R$)"));
-        relatorio.append("----------------------------------------------------------%n");
 
         for (int mes = 1; mes <= 12; mes++){
             double ganho = calcularGanhos(mes, ano);
             double gasto = calcularGastos(mes, ano);
             double lucro = ganho - gasto;
 
-            relatorio.append(String.format("Mês %02d/%d %-15.2f %-15.2f %-15.2f%n",
+            relatorio.append(String.format("%02d/%d      %-15.2f      %-15.2f      %-15.2f%n",
                              mes, ano, ganho, gasto, lucro));
         }
         return relatorio.toString();
