@@ -3,9 +3,12 @@ package Principal;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 public class ClinicaOdontoGUI extends JFrame {
 
@@ -280,53 +283,146 @@ public class ClinicaOdontoGUI extends JFrame {
         return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
     }
 
-    private JPanel createMateriaisPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+   private JPanel createMateriaisPanel() {
+    JPanel panel = new JPanel(new BorderLayout());
 
-        String[] colunas = {"Nome", "Valor (R$)"};
-        materiaisTableModel = new DefaultTableModel(colunas, 0);
-        materiaisTable = new JTable(materiaisTableModel);
-        JScrollPane scrollPane = new JScrollPane(materiaisTable);
-        panel.add(scrollPane, BorderLayout.CENTER);
+    // Modelo com coluna de botão "Remover"
+    materiaisTableModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 2; // apenas a coluna do botão é editável
+        }
+    };
 
-        JPanel cadastroPanel = new JPanel(new GridBagLayout());
-        cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Material"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    materiaisTable = new JTable(materiaisTableModel);
 
-        JLabel nomeLabel = new JLabel("Nome:");
-        JTextField nomeField = new JTextField(20);
-        JLabel valorLabel = new JLabel("Valor (R$):");
-        JTextField valorField = new JTextField(10);
-        JButton cadastrarButton = new JButton("Cadastrar Material");
 
-        gbc.gridx = 0; gbc.gridy = 0; cadastroPanel.add(nomeLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 0; cadastroPanel.add(nomeField, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; cadastroPanel.add(valorLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 1; cadastroPanel.add(valorField, gbc);
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; cadastroPanel.add(cadastrarButton, gbc);
+    // Reduz a largura da coluna do botão
+    TableColumn colunaBotao = materiaisTable.getColumnModel().getColumn(2);
+    colunaBotao.setPreferredWidth(30); // largura pequena
+    colunaBotao.setMaxWidth(30);
+    colunaBotao.setMinWidth(30);
 
-        cadastrarButton.addActionListener(e -> {
-            String nome = nomeField.getText();
-            String valorTexto = valorField.getText();
-            if (nome.isEmpty() || valorTexto.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Preencha todos os campos.");
-                return;
-            }
-            try {
-                double valor = Double.parseDouble(valorTexto);
-                materiais.add(new Materiais(nome, valor));
-                atualizarTabelaMateriais();
-                nomeField.setText(""); valorField.setText("");
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Valor inválido.");
-            }
-        });
+    colunaBotao.setCellRenderer(new ButtonRenderer());
+    colunaBotao.setCellEditor(new ButtonEditor(new JCheckBox()));
 
-        panel.add(cadastroPanel, BorderLayout.SOUTH);
-        return panel;
+    JScrollPane scrollPane = new JScrollPane(materiaisTable);
+    panel.add(scrollPane, BorderLayout.CENTER);
+
+    JPanel cadastroPanel = new JPanel(new GridBagLayout());
+    cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Material"));
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+
+    JLabel nomeLabel = new JLabel("Nome:");
+    JTextField nomeField = new JTextField(20);
+    JLabel valorLabel = new JLabel("Valor (R$):");
+    JTextField valorField = new JTextField(10);
+    JButton cadastrarButton = new JButton("Cadastrar Material");
+
+    gbc.gridx = 0; gbc.gridy = 0; cadastroPanel.add(nomeLabel, gbc);
+    gbc.gridx = 1; gbc.gridy = 0; cadastroPanel.add(nomeField, gbc);
+    gbc.gridx = 0; gbc.gridy = 1; cadastroPanel.add(valorLabel, gbc);
+    gbc.gridx = 1; gbc.gridy = 1; cadastroPanel.add(valorField, gbc);
+    gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; cadastroPanel.add(cadastrarButton, gbc);
+
+    cadastrarButton.addActionListener(e -> {
+        String nome = nomeField.getText();
+        String valorTexto = valorField.getText();
+        if (nome.isEmpty() || valorTexto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos.");
+            return;
+        }
+        try {
+            double valor = Double.parseDouble(valorTexto);
+            materiais.add(new Materiais(nome, valor));
+            materiais.sort(Comparator.comparing(Materiais::getNome));
+            atualizarTabelaMateriais();
+            nomeField.setText(""); valorField.setText("");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Valor inválido.");
+        }
+    });
+
+    
+
+    panel.add(cadastroPanel, BorderLayout.SOUTH);
+    atualizarTabelaMateriais(); // Carrega os dados ao abrir
+    return panel;
+}
+
+// Renderizador de botão "Remover"
+private class ButtonRenderer extends JButton implements TableCellRenderer {
+    public ButtonRenderer() {
+        setOpaque(true);
+          setText("⋮"); // símbolo de três pontos verticais
+        setFont(new Font("SansSerif", Font.PLAIN, 14));
     }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+        boolean isSelected, boolean hasFocus, int row, int column) {
+        return this;
+    }
+}
+
+// Editor que trata clique no botão "Remover"
+private class ButtonEditor extends DefaultCellEditor {
+    private JButton button;
+    private boolean clicked;
+    private int row;
+
+    public ButtonEditor(JCheckBox checkBox) {
+        super(checkBox);
+        button = new JButton("⋮");
+        button.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        button.setOpaque(true);
+        button.addActionListener(e -> fireEditingStopped());
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
+        this.row = row;
+        clicked = true;
+        return button;
+    }
+
+  @Override
+    public Object getCellEditorValue() {
+        if (clicked) {
+            int resposta = JOptionPane.showOptionDialog(
+            button,
+            "Remover este material?",
+            "Confirmação",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            new Object[]{"Sim", "Não"},
+            "Não"
+);
+            if (resposta == JOptionPane.YES_OPTION && row < materiais.size()) {
+                materiais.remove(row);
+                atualizarTabelaMateriais();
+            }
+        }
+        clicked = false;
+        return "⋮";
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        clicked = false;
+        return super.stopCellEditing();
+    }
+
+    @Override
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
+
    
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);

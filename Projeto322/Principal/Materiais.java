@@ -7,24 +7,15 @@ public class Materiais  {
 public Materiais(String nome, double valor){
   this.nome = nome;
   this.valor = valor;
-
-
 }
-
 
 public String getNome(){
   return nome;
 }
 
-
-
-
 public double getValor(){
   return valor;
 }
-
-
-
 
 public void setValor(double valor){
   this.valor = valor;
@@ -33,8 +24,5 @@ public void setValor(double valor){
    public String toString() {
        return nome + " - R$" + String.format("%.2f", valor);
    }
-
-
-
 
 }
