@@ -11,8 +11,8 @@ public class Dentista extends Pessoa {
     }
 
     // Construtor para RECUPERAR um Dentista do banco de dados (com ID já definido)
-    public Dentista(int id, String nome, String cpf, String dadosBancarios, String cro) {
-        super(nome, cpf, dadosBancarios);
+    public Dentista(int id, String nome, String cpf, String telefone, String cro) {
+        super(nome, cpf, telefone);
         this.id = id;
         this.cro = cro;
     }
