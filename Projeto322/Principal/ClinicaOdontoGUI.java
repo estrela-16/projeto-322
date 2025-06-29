@@ -1,6 +1,7 @@
 package Principal;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -31,6 +32,7 @@ public class ClinicaOdontoGUI extends JFrame {
     private Agenda agenda;
     private Financeiro financeiro;
 
+
     public ClinicaOdontoGUI() {
         super("Sistema de Gerenciamento Odontológico");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,6 +42,7 @@ public class ClinicaOdontoGUI extends JFrame {
         pacientes = new ArrayList<>();
         dentistas = new ArrayList<>();
         materiais = new ArrayList<>();
+        agenda = new Agenda();
         financeiro = new Financeiro(agenda, 0.3);
 
         tabbedPane = new JTabbedPane();
@@ -70,7 +73,7 @@ public class ClinicaOdontoGUI extends JFrame {
         dentistasPanel = createDentistasPanel();
         tabbedPane.addTab("Dentistas", dentistasPanel);
 
-        agendaPanel = new JPanel();
+        agendaPanel = createAgendaPanel();
         tabbedPane.addTab("Agenda", agendaPanel);
 
         procedimentosPanel = new JPanel();
@@ -156,6 +159,7 @@ public class ClinicaOdontoGUI extends JFrame {
         }
     }
 
+
     private JPanel createDentistasPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -233,6 +237,14 @@ public class ClinicaOdontoGUI extends JFrame {
             dentistasTableModel.addRow(new Object[]{d.getNome(), d.getTelefone(), d.getCpf(), d.getCro()});
         }
     }
+    
+
+    private JPanel createAgendaPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        AgendaUI agendaUI = new AgendaUI(agenda, java.time.LocalDate.now().getMonthValue(), java.time.LocalDate.now().getYear());
+        panel.add(agendaUI, BorderLayout.CENTER);
+        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+    }
 
     private JPanel createMateriaisPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -281,7 +293,7 @@ public class ClinicaOdontoGUI extends JFrame {
         panel.add(cadastroPanel, BorderLayout.SOUTH);
         return panel;
     }
-
+   
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);
         for (Materiais m : materiais) {
