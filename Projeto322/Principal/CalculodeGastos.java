@@ -8,10 +8,6 @@ public class CalculodeGastos {
     private List<Contas>conta;
     private double comissao;
     private double servico;
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/main
 
 
     public CalculodeGastos(){
@@ -37,7 +33,8 @@ public class CalculodeGastos {
 
     public double CalculodeMateriais(){
         double total = 0;
-         for(int i = 0; i < materialcomum.size(); i++){
+         for(int i = 0; i < materialcomum.size(); i++){   
+
             total += (materialcomum.get(i).getQuantidade())*(materialcomum.get(i).getValor());
          }
          total = total/numerodeconsultas;
@@ -71,19 +68,6 @@ public class CalculodeGastos {
         total = contaMatComum +contas;
 
         return total;
-    }
-
-    public void setNumeroDeConsultas(int num){
-        this.numerodeconsultas = num;
-    }
-
-    public void setComissao(double comissao){
-        this.comissao = comissao;
-
-    }
-
-    public void setTaxaServico(double servico){
-        this.servico = servico;
     }
 
 }

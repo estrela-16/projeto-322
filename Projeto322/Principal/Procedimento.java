@@ -45,7 +45,18 @@ public class Procedimento {
         return materiais;
     }
 
-    public double getPreco(){
+    public double getPreco(){    public void setNumeroDeConsultas(int num){
+        this.numerodeconsultas = num;
+    }
+
+    public void setComissao(double comissao){
+        this.comissao = comissao;
+
+    }
+
+    public void setTaxaServico(double servico){
+        this.servico = servico;
+    }
         this.preco=this.calcularCustoTotal();
         return this.calcularCustoTotal();
     }
@@ -71,14 +82,23 @@ public class Procedimento {
         for (Materiais m : materiais) {
             total += m.getValor();
         }
-        double taxa;
+        double taxa;    public void setNumeroDeConsultas(int num){
+        this.numerodeconsultas = num;
+    }
+
+    public void setComissao(double comissao){
+        this.comissao = comissao;
+
+    }
+
+    public void setTaxaServico(double servico){
+        this.servico = servico;
+    }
         taxa = gastos.getTaxaServico();
         total = taxa*(total + gastos.gastosTotais());
 
         return total;
     }
-
-
 
     @Override
     public String toString() {
