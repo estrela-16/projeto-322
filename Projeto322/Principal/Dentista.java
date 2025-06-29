@@ -1,5 +1,5 @@
 package Principal;
-public class Dentista extends Pessoa {
+public class Dentista extends Pessoa implements Id_Banco {
 
     private int id; // atributo para armazenar o ID do banco de dados
     private String cro;
@@ -27,11 +27,12 @@ public class Dentista extends Pessoa {
         return getNome() + " - CRO: " + cro;
     }
 
-
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {//utilizado depois de adicionar o dentista na tabela para definir o seu id
         this.id = id;
     }

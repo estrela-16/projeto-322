@@ -1,12 +1,32 @@
 package Principal;
-public class Materiais  {
+public class Materiais implements Id_Banco{
   private String nome;
   private  double valor;
+  private int id;
 
 
 public Materiais(String nome, double valor){
+  this.id=0;
   this.nome = nome;
   this.valor = valor;
+}
+//retornar materiais do bd
+public Materiais(int id, String nome, double valor){
+  this.id=0;
+  this.nome = nome;
+  this.valor = valor;
+}
+
+public Materiais(){
+  super();
+}
+
+public void setId(int id){
+  this.id=id;
+}
+
+public int getId(){
+  return id;
 }
 
 public String getNome(){

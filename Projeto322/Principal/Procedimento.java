@@ -2,7 +2,7 @@ package Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Procedimento {
+public class Procedimento implements Id_Banco{
     private int id;
     private String nome;
     private String especialidade;
@@ -50,10 +50,12 @@ public class Procedimento {
         return this.calcularCustoTotal();
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }

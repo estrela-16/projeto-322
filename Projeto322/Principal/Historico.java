@@ -8,7 +8,7 @@ import java.util.List;
  * Contém a descrição textual dos procedimentos passados e uma lista de caminhos
  * para arquivos de imagem relevantes (como raios-x).
  */
-public class Historico {
+public class Historico implements Id_Banco{
 
     private int id; // ID do histórico no banco de dados
     private int pacienteId; // ID do paciente ao qual este histórico pertence
@@ -33,10 +33,12 @@ public class Historico {
 
     // --- Getters e Setters ---
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
