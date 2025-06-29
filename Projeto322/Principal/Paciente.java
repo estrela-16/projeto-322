@@ -7,7 +7,7 @@ import DAO.HistoricoDAO; // Importe o DAO
  * Após ser carregado do banco de dados, este objeto também contém uma referência
  * ao seu Histórico, permitindo modificá-lo de forma conveniente.
  */
-public class Paciente extends Pessoa {
+public class Paciente extends Pessoa implements Id_Banco{
     private int id;
     private Historico historico;
 
@@ -32,10 +32,12 @@ public class Paciente extends Pessoa {
 
     // --- Getters e Setters ---
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
