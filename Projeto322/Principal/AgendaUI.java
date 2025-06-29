@@ -16,14 +16,20 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
     private JPanel painelDias;
     private JTextArea detalhesAtendimentos;
     private JLabel labelMesAno;
+    private List<Paciente> pacientes;
+    private List<Dentista> dentistas;
+    private GerenciarProcedimento gerencia;
 
-    public AgendaUI(Agenda agenda, int mes, int ano) {
+
+    public AgendaUI(Agenda agenda, int mes, int ano, List<Paciente> pacientes, List<Dentista> dentistas,  GerenciarProcedimento gerencia) {
         this.agenda = agenda;
         this.mesAnoAtual = YearMonth.of(ano, mes);
+        this.pacientes = pacientes;
+        this.dentistas = dentistas;
+        this.gerencia = gerencia;
 
         setLayout(new BorderLayout());
 
-        // Topo com mês, ano e botões de navegação
         JPanel topo = new JPanel(new BorderLayout());
         JButton botaoAnterior = new JButton("←");
         JButton botaoProximo = new JButton("→");
@@ -36,11 +42,9 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
         topo.add(botaoProximo, BorderLayout.EAST);
         add(topo, BorderLayout.NORTH);
 
-        // Painel dos dias do mês
         painelDias = new JPanel(new GridLayout(0, 7, 5, 5));
         add(painelDias, BorderLayout.CENTER);
 
-        // Painel inferior com botão + área de detalhes
         JPanel painelInferior = new JPanel(new BorderLayout());
 
         JButton botaoNovoAtendimento = new JButton("<html><center>+");
@@ -82,8 +86,12 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
             JButton botaoDia = new JButton(String.valueOf(dia));
             LocalDate dataBotao = mesAnoAtual.atDay(dia);
 
-            boolean temAtendimento = agenda.getTodos().stream()
-                .anyMatch(a -> a.getData().equals(dataBotao));
+           boolean temAtendimento = agenda.getTodos().stream()
+            .anyMatch(a -> a.getData().equals(dataBotao)
+                && a.getPaciente() != null
+                && a.getDentista() != null
+                && a.getProcedimentos() != null);
+
 
             botaoDia.setBackground(temAtendimento ? Color.CYAN : Color.LIGHT_GRAY);
             botaoDia.addActionListener(e -> mostrarAtendimentosDoDia(dataBotao));
@@ -117,38 +125,51 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
     }
 
     private void criarNovoAtendimento() {
-        try {
-            String nomePaciente = JOptionPane.showInputDialog(this, "Nome do paciente:");
-            if (nomePaciente == null || nomePaciente.isBlank()) return;
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 
-            String dataStr = JOptionPane.showInputDialog(this, "Data (DD-MM-AAAA):");
-            if (dataStr == null || dataStr.isBlank()) return;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            LocalDate data = LocalDate.parse(dataStr, formatter);
+        List<Procedimento> procedimentos =gerencia.getProcedimentos();
 
-            String horario = JOptionPane.showInputDialog(this, "Horário (HH:mm):");
-            if (horario == null || horario.isBlank()) return;
+        JComboBox<Paciente> pacienteBox = new JComboBox<>(pacientes.toArray(new Paciente[0]));
+        JComboBox<Dentista> dentistaBox = new JComboBox<>(dentistas.toArray(new Dentista[0]));
+        JComboBox<Procedimento> procedimentoBox = new JComboBox<>(procedimentos.toArray(new Procedimento[0]));
+        JTextField dataField = new JTextField();
+        JTextField horaField = new JTextField();
 
-            String nomeProcedimento = JOptionPane.showInputDialog(this, "Nome do procedimento:");
-            if (nomeProcedimento == null || nomeProcedimento.isBlank()) return;
+        panel.add(new JLabel("Paciente:"));
+        panel.add(pacienteBox);
+        panel.add(new JLabel("Dentista:"));
+        panel.add(dentistaBox);
+        panel.add(new JLabel("Procedimento:"));
+        panel.add(procedimentoBox);
+        panel.add(new JLabel("Data (dd-MM-yyyy):"));
+        panel.add(dataField);
+        panel.add(new JLabel("Hora (HH:mm):"));
+        panel.add(horaField);
 
-            String nomeDentista = JOptionPane.showInputDialog(this, "Nome do dentista:");
-            if (nomeDentista == null || nomeDentista.isBlank()) return;
+        int result = JOptionPane.showConfirmDialog(this, panel, "Novo Atendimento", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            Paciente paciente = new Paciente(nomePaciente, "", "");
-            Dentista dentista = new Dentista(nomeDentista, "", "", "");
-            Procedimento procedimento = new Procedimento(nomeProcedimento, "");
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                LocalDate data = LocalDate.parse(dataField.getText(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                String hora = horaField.getText();
+                Paciente paciente = (Paciente) pacienteBox.getSelectedItem();
+                Dentista dentista = (Dentista) dentistaBox.getSelectedItem();
+                Procedimento procedimento = (Procedimento) procedimentoBox.getSelectedItem();
 
-            Atendimento novo = new Atendimento(
-                data, horario, procedimento, paciente,
-                dentista, StatusConsulta.AGENDADA, StatusPagamento.NAO_PAGA
-            );
+                if (paciente == null || dentista == null || procedimento == null) {
+                    JOptionPane.showMessageDialog(this, "Por favor, selecione paciente, dentista e procedimento válidos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-            agenda.agendarAtendimento(novo);
-            atualizarCalendario();
-            mostrarAtendimentosDoDia(data);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao criar atendimento: " + ex.getMessage());
+                Atendimento novo = new Atendimento(data, hora, procedimento, paciente, dentista,
+                        StatusConsulta.AGENDADA, StatusPagamento.NAO_PAGA);
+
+                agenda.agendarAtendimento(novo);
+                atualizarCalendario();
+                mostrarAtendimentosDoDia(data);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao criar atendimento: " + ex.getMessage());
+            }
         }
     }
 }

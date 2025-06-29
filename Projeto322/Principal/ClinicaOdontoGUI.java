@@ -52,6 +52,7 @@ public class ClinicaOdontoGUI extends JFrame {
         materiaiscomuns = new ArrayList<>();
         agenda = new Agenda();
         financeiro = new Financeiro(agenda, 0.3);
+        gerenciarProcedimento= new GerenciarProcedimento();
 
         tabbedPane = new JTabbedPane();
         createMenuBar();
@@ -286,9 +287,9 @@ public class ClinicaOdontoGUI extends JFrame {
 
     private JPanel createAgendaPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        AgendaUI agendaUI = new AgendaUI(agenda, java.time.LocalDate.now().getMonthValue(), java.time.LocalDate.now().getYear());
+        AgendaUI agendaUI = new AgendaUI(agenda, java.time.LocalDate.now().getMonthValue(), java.time.LocalDate.now().getYear(), pacientes, dentistas, gerenciarProcedimento);
         panel.add(agendaUI, BorderLayout.CENTER);
-        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear(),  pacientes, dentistas, gerenciarProcedimento);
     }
 
    private JPanel createMateriaisPanel() {

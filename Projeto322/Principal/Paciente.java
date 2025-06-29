@@ -22,5 +22,9 @@ public class Paciente extends Pessoa {
         this.historico = historico;
     }
 
-    
+    @Override
+    public String toString() {
+        return getNome(); // ou: return nome + " (" + cpf + ")";
+    }
+
 }
