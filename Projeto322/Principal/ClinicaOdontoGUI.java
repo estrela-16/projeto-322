@@ -42,6 +42,7 @@ public class ClinicaOdontoGUI extends JFrame {
     private GerenciarProcedimento gerenciarProcedimento;
     private Agenda agenda;
     private Financeiro financeiro;
+    private CalculodeGastos gastos;
 
     public ClinicaOdontoGUI() {
         super("Sistema de Gerenciamento Odontológico");
@@ -172,7 +173,7 @@ public class ClinicaOdontoGUI extends JFrame {
                 return;
             }
 
-            Procedimento novoProcedimento = new Procedimento(nomeProcedimento, especialidade);
+            Procedimento novoProcedimento = new Procedimento(nomeProcedimento, especialidade, gastos);
             for (Materiais materialSelecionado : materiaisSelecionados) {
                 novoProcedimento.adicionarMaterial(materialSelecionado);
             }
