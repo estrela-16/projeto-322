@@ -1,9 +1,12 @@
+package DAO;
 import Principal.Dentista;
 import Principal.ConexaoBD;
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +21,7 @@ public class DentistaDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, dentista.getNome());
             stmt.setString(2, dentista.getCpf());
-            stmt.setString(3, dentista.getCro());
-            stmt.setString(4, dentista.getDadosBancarios());
+            stmt.setString(3, dentista.getCro()); //ADD em dentista
             stmt.executeUpdate();
             System.out.println("Dentista inserido com sucesso!");
         } catch (SQLException e) {
@@ -39,7 +41,6 @@ public class DentistaDAO {
                 dentista.setNome(rs.getString("nome"));
                 dentista.setCpf(rs.getString("cpf"));
                 dentista.setCro(rs.getString("cro"));
-                dentista.setDadosBancarios(rs.getString("dados_bancarios"));
                 dentistas.add(dentista);
             }
         } catch (SQLException e) {
@@ -56,7 +57,6 @@ public class DentistaDAO {
             stmt.setString(1, dentista.getNome());
             stmt.setString(2, dentista.getCpf());
             stmt.setString(3, dentista.getCro());
-            stmt.setString(4, dentista.getDadosBancarios());
             stmt.setInt(5, dentista.getId());
             stmt.executeUpdate();
             System.out.println("Dentista atualizado com sucesso!");

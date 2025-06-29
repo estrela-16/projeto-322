@@ -1,3 +1,4 @@
+package Principal;
 public class MateriaisComuns extends Materiais {
     private int quantidade;
 
