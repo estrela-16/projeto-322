@@ -14,6 +14,7 @@ import java.util.List;
 
 public class DentistaDAO {
 
+    //indeser dentista no BD
     public void inserir(Dentista dentista) {
         // Adiciona RETURN_GENERATED_KEYS para informar ao PreparedStatement
         // que queremos recuperar as chaves geradas automaticamente (o ID)
@@ -23,7 +24,7 @@ public class DentistaDAO {
             stmt.setString(1, dentista.getNome());
             stmt.setString(2, dentista.getCpf());
             stmt.setString(3, dentista.getTelefone());
-            stmt.setString(3, dentista.getCro());
+            stmt.setString(4, dentista.getCro());
             stmt.executeUpdate(); // Executa a inserção
 
             // Agora, vamos recuperar o ID gerado pelo banco de dados
@@ -64,17 +65,62 @@ public class DentistaDAO {
         return dentistas;
     }
 
-    // Métodos para atualizar e deletar podem ser adicionados aqui
+    // Recebe um dentista com apenas os atributos que desejamos modificar preenchido, com o mesmo Id do dentista original
     public void atualizar(Dentista dentista) {
-        String sql = "UPDATE dentistas SET nome = ?, cpf = ?, telefone = ?, cro = ? WHERE id = ?";
+        // StringBuilder para construir a query dinamicamente
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE dentistas SET ");
+        
+        // Lista para armazenar os valores dos parâmetros dinamicamente
+        List<Object> params = new ArrayList<>();
+
+        // Verifica cada campo do objeto. Se não for nulo, adiciona à query e à lista de parâmetros.
+        if (dentista.getNome() != null && !dentista.getNome().isEmpty()) {
+            sqlBuilder.append("nome = ?, ");
+            params.add(dentista.getNome());
+        }
+        if (dentista.getCpf() != null && !dentista.getCpf().isEmpty()) {
+            sqlBuilder.append("cpf = ?, ");
+            params.add(dentista.getCpf());
+        }
+        if (dentista.getTelefone() != null && !dentista.getTelefone().isEmpty()) {
+            sqlBuilder.append("telefone = ?, ");
+            params.add(dentista.getTelefone());
+        }
+        if (dentista.getCro() != null && !dentista.getCro().isEmpty()) {
+            sqlBuilder.append("cro = ?, ");
+            params.add(dentista.getCro());
+        }
+
+        // Se nenhum campo foi adicionado para atualização, não faz nada.
+        if (params.isEmpty()) {
+            System.out.println("Nenhum campo fornecido para atualização.");
+            return;
+        }
+
+        // Remove a última vírgula e o espaço ", " da query
+        sqlBuilder.setLength(sqlBuilder.length() - 2);
+
+        // Adiciona a cláusula WHERE para garantir que apenas o dentista certo seja atualizado
+        sqlBuilder.append(" WHERE id = ?");
+        params.add(dentista.getId());
+
+        // Executa a query
         try (Connection conn = ConexaoBD.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, dentista.getNome());
-            stmt.setString(2, dentista.getCpf());
-            stmt.setString(3, dentista.getTelefone());
-            stmt.setString(5, dentista.getCro());
-            stmt.executeUpdate();
-            System.out.println("Dentista atualizado com sucesso!");
+            PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
+            
+            // Define os parâmetros na PreparedStatement a partir da lista
+            for (int i = 0; i < params.size(); i++) {
+                // i + 1 porque os índices de PreparedStatement começam em 1
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Dentista atualizado com sucesso!");
+            } else {
+                System.out.println("Nenhum dentista encontrado com o ID fornecido.");
+            }
+
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar dentista: " + e.getMessage());
         }

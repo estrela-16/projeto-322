@@ -10,8 +10,8 @@ public class CriadorTabelas {
                               "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                               "nome TEXT NOT NULL," +
                               "cpf TEXT UNIQUE NOT NULL," +
-                              "telefone TEXT" +
-                              "cro TEXT UNIQUE NOT NULL," +
+                              "telefone TEXT," +
+                              "cro TEXT UNIQUE NOT NULL" +
                               ");";
 
         String sqlPacientes = "CREATE TABLE IF NOT EXISTS pacientes (" +
