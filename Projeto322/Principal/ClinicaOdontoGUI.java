@@ -25,7 +25,7 @@ public class ClinicaOdontoGUI extends JFrame {
 
     private List<Paciente> pacientes;
     private List<Dentista> dentistas;
-    private List<Material> materiais;
+    private List<Materiais> materiais;
 
     private GerenciarProcedimento gerenciarProcedimento;
     private Agenda agenda;
@@ -90,6 +90,22 @@ public class ClinicaOdontoGUI extends JFrame {
         pacientesTableModel = new DefaultTableModel(colunas, 0);
         pacientesTable = new JTable(pacientesTableModel);
         JScrollPane scrollPane = new JScrollPane(pacientesTable);
+
+        pacientesTableModel.addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            if (row >= 0 && column >= 0 && row < pacientes.size()){
+                Paciente p = pacientes.get(row);
+                Object newValue = pacientesTableModel.getValueAt(row, column);
+
+                switch (column) {
+                    case 0 -> p.setNome((String) newValue);
+                    case 1 -> p.setTelefone((String) newValue);
+                    case 2 -> p.setCpf((String) newValue);
+                }
+            }
+        }
+        );
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
@@ -147,6 +163,22 @@ public class ClinicaOdontoGUI extends JFrame {
         dentistasTableModel = new DefaultTableModel(colunas, 0);
         dentistasTable = new JTable(dentistasTableModel);
         JScrollPane scrollPane = new JScrollPane(dentistasTable);
+         dentistasTableModel.addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            if (row >= 0 && column >= 0 && row < dentistas.size()){
+                Dentista d = dentistas.get(row);
+                Object newValue = dentistasTableModel.getValueAt(row, column);
+
+                switch (column) {
+                    case 0 -> d.setNome((String) newValue);
+                    case 1 -> d.setTelefone((String) newValue);
+                    case 2 -> d.setCpf((String) newValue);
+                    case 3 -> d.setCro((String) newValue);
+                }
+            }
+        }
+        );
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
@@ -238,7 +270,7 @@ public class ClinicaOdontoGUI extends JFrame {
             }
             try {
                 double valor = Double.parseDouble(valorTexto);
-                materiais.add(new Material(nome, valor));
+                materiais.add(new Materiais(nome, valor));
                 atualizarTabelaMateriais();
                 nomeField.setText(""); valorField.setText("");
             } catch (NumberFormatException ex) {
@@ -252,7 +284,7 @@ public class ClinicaOdontoGUI extends JFrame {
 
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);
-        for (Material m : materiais) {
+        for (Materiais m : materiais) {
             materiaisTableModel.addRow(new Object[]{m.getNome(), m.getValor()});
         }
     }
@@ -261,53 +293,3 @@ public class ClinicaOdontoGUI extends JFrame {
         SwingUtilities.invokeLater(ClinicaOdontoGUI::new);
     }
 }
-
-class Material {
-    private String nome;
-    private double valor;
-
-    public Material(String nome, double valor) {
-        this.nome = nome;
-        this.valor = valor;
-    }
-    public String getNome() { return nome; }
-    public double getValor() { return valor; }
-    public void setNome(String nome) { this.nome = nome; }
-    public void setValor(double valor) { this.valor = valor; }
-}
-
-class Paciente {
-    private String nome, cpf, telefone;
-    public Paciente(String nome, String cpf, String telefone) {
-        this.nome = nome; this.cpf = cpf; this.telefone = telefone;
-    }
-    public String getNome() { return nome; }
-    public String getCpf() { return cpf; }
-    public String getTelefone() { return telefone; }
-    public void setNome(String nome) { this.nome = nome; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-}
-
-class Dentista {
-    private String nome, cpf, telefone, cro;
-    public Dentista(String nome, String cpf, String telefone, String cro) {
-        this.nome = nome; this.cpf = cpf; this.telefone = telefone; this.cro = cro;
-    }
-    public String getNome() { return nome; }
-    public String getCpf() { return cpf; }
-    public String getTelefone() { return telefone; }
-    public String getCro() { return cro; }
-    public void setNome(String nome) { this.nome = nome; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-    public void setCro(String cro) { this.cro = cro; }
-}
-
-class Financeiro {
-    public Financeiro(Agenda agenda, double percentual) {}
-}
-
-class Agenda {}
-
-class GerenciarProcedimento {}
