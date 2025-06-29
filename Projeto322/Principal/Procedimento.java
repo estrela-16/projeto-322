@@ -13,7 +13,6 @@ public class Procedimento {
         this.materiais = new ArrayList<>();
     }
 
-
     public String getNome() {
         return nome;
     }

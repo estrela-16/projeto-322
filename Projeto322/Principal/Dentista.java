@@ -22,6 +22,12 @@ public class Dentista extends Pessoa {
         this.id=0;
     }
 
+    @Override
+    public String toString() {
+        return getNome() + " - CRO: " + cro;
+    }
+
+
     public int getId() {
         return id;
     }
