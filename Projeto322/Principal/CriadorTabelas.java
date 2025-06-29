@@ -23,17 +23,16 @@ public class CriadorTabelas {
 
         String sqlHistorico = "CREATE TABLE IF NOT EXISTS historicos (" +
                               "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                              "paciente_id INTEGER NOT NULL," +
-                              "data TEXT NOT NULL," +
-                              "problemas_passados TEXT," +
-                              "FOREIGN KEY (paciente_id) REFERENCES pacientes(id)" +
+                              "paciente_id INTEGER," +
+                              "descricao TEXT," +
+                              "FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE" +
                               ");";
 
         String sqlHistoricoImagens = "CREATE TABLE IF NOT EXISTS historico_imagens (" +
                                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                                      "historico_id INTEGER NOT NULL," +
                                      "caminho_imagem TEXT NOT NULL," +
-                                     "FOREIGN KEY (historico_id) REFERENCES historicos(id)" +
+                                     "FOREIGN KEY (historico_id) REFERENCES historicos(id) ON DELETE CASCADE" +
                                      ");";
 
         String sqlMateriais = "CREATE TABLE IF NOT EXISTS materiais (" +

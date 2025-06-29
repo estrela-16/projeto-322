@@ -1,93 +1,53 @@
 package Principal;
 
-import DAO.DentistaDAO;
+import DAO.*;
+
 import java.util.List;
 
 public class Main {
-
     public static void main(String[] args) {
+        PacienteDAO pacienteDAO = new PacienteDAO();
+        HistoricoDAO historicoDAO = new HistoricoDAO();
+
+        // --- ETAPA 1: CRIANDO UM NOVO PACIENTE E SEU HISTÓRICO ---
+        System.out.println("--- Criando novo paciente ---");
         
-        // --- ETAPA 1: CRIAÇÃO DO BANCO DE DADOS E TABELAS ---
-        // Isso garantirá que o arquivo .db e as tabelas existam antes de qualquer operação.
-        // Só precisa ser executado uma vez, mas não há problema em chamar sempre.
-        System.out.println("--- 1. Inicializando o Banco de Dados ---");
-        CriadorTabelas.criarTabelas();
-        System.out.println("-----------------------------------------\n");
+        // 1. Crie e salve o paciente PRIMEIRO para obter o ID
+        Paciente novoPaciente = new Paciente("Joana Silva", "987.654.321-00", "(81) 91122-3344");
+        pacienteDAO.inserir(novoPaciente); // Agora, novoPaciente.getId() tem um valor!
 
-        // --- ETAPA 2: INSERINDO NOVOS DENTISTAS ---
-        System.out.println("--- 2. Inserindo novos dentistas ---");
-        DentistaDAO dentistaDAO = new DentistaDAO();
+        // 2. Crie e salve o histórico DEPOIS, usando o ID do paciente
+        Historico historicoDaJoana = new Historico(novoPaciente.getId(), "Paciente chegou com dor no siso.");
+        historicoDAO.inserir(historicoDaJoana); // Agora, historicoDaJoana.getId() tem um valor!
 
-        // Criando o primeiro dentista
-        Dentista drCarlos = new Dentista("Dr. Carlos Andrade", "111.222.333-44", "(11) 91234-5678", "CRO-SP-12345");
-        dentistaDAO.inserir(drCarlos); 
-        // Após a inserção, o ID do objeto drCarlos é atualizado automaticamente!
+        // 3. Associe o histórico ao objeto do paciente em memória
+        novoPaciente.setHistorico(historicoDaJoana);
 
-        // Criando o segundo dentista
-        Dentista draAna = new Dentista("Dra. Ana Souza", "555.666.777-88", "(21) 98765-4321", "CRO-RJ-67890");
-        dentistaDAO.inserir(draAna);
-        System.out.println("--------------------------------------\n");
 
-        // --- ETAPA 3: LISTANDO TODOS OS DENTISTAS ---
-        System.out.println("--- 3. Listando todos os dentistas cadastrados ---");
-        List<Dentista> todosOsDentistas = dentistaDAO.buscarTodos();
-        for (Dentista d : todosOsDentistas) {
-            System.out.println(
-                "ID: " + d.getId() + 
-                " | Nome: " + d.getNome() + 
-                " | Telefone: " + d.getTelefone() + 
-                " | CRO: " + d.getCro()
-            );
-        }
-        System.out.println("---------------------------------------------------\n");
-
-        // --- ETAPA 4: ATUALIZANDO UM DENTISTA ---
-        // Vamos supor que o Dr. Carlos mudou de telefone.
-        System.out.println("--- 4. Atualizando o telefone do Dr. Carlos ---");
+        // --- ETAPA 2: CARREGANDO E MODIFICANDO O PACIENTE ---
+        System.out.println("--- Carregando e modificando o paciente ---");
         
-        // Criamos um objeto "pacote de instruções" apenas com o ID e o novo telefone.
-        Dentista atualizacaoCarlos = new Dentista();
-        atualizacaoCarlos.setId(drCarlos.getId()); // Usamos o ID que já temos
-        atualizacaoCarlos.setTelefone("JABA");
+        // Suponha que você fechou e abriu o programa. Vamos carregar a Joana do banco.
+        // Em um sistema real, você buscaria por CPF ou nome. Aqui, usamos o ID que já temos.
+        List<Paciente> pacientes = pacienteDAO.buscarTodos();
+        Paciente pacienteCarregado = pacientes.get(pacientes.size() - 1); // Pegando o último inserido
 
-        dentistaDAO.atualizar(atualizacaoCarlos);
-        System.out.println("------------------------------------------------\n");
+        // Carregue o histórico dele
+        Historico historicoCarregado = historicoDAO.buscarPorPacienteId(pacienteCarregado.getId());
+        
+        // Associe o histórico carregado
+        pacienteCarregado.setHistorico(historicoCarregado);
+        
+        System.out.println("Descrição atual: " + pacienteCarregado.getHistorico().getDescricao());
 
-        List<Dentista> todos = dentistaDAO.buscarTodos();
-        for (Dentista d : todos) {
-            System.out.println(
-                "ID: " + d.getId() + 
-                " | Nome: " + d.getNome() + 
-                " | Telefone: " + d.getTelefone() + 
-                " | CRO: " + d.getCro()
-            );
-        }
+        // 4. Use os novos métodos para modificar o histórico de forma fácil!
+        System.out.println("Atualizando descrição e adicionando imagem...");
+        pacienteCarregado.definirDescricaoHistorico("Siso extraído com sucesso. Paciente liberada.", historicoDAO);
+        pacienteCarregado.adicionarImagemAoHistorico("imagens_historico/raio_x_joana.jpg", historicoDAO);
 
-        System.out.println("------------------------------------------------\n");
-
-
-        // --- ETAPA 5: DELETANDO UM DENTISTA ---
-        // Vamos remover a Dra. Ana do sistema.
-        System.out.println("--- 5. Deletando a Dra. Ana ---");
-        dentistaDAO.deletar(draAna.getId());
-        System.out.println("--------------------------------\n");
-
-
-        // --- ETAPA 6: LISTANDO NOVAMENTE PARA VER O RESULTADO FINAL ---
-        System.out.println("--- 6. Lista final de dentistas ---");
-        List<Dentista> dentistasFinais = dentistaDAO.buscarTodos();
-        if (dentistasFinais.isEmpty()) {
-            System.out.println("Nenhum dentista cadastrado no momento.");
-        } else {
-            for (Dentista d : dentistasFinais) {
-                System.out.println(
-                    "ID: " + d.getId() + 
-                    " | Nome: " + d.getNome() + 
-                    " | Telefone: " + d.getTelefone() + // Verificando o telefone atualizado
-                    " | CRO: " + d.getCro()
-                );
-            }
-        }
-        System.out.println("-------------------------------------\n");
+        // Verificando a mudança
+        Historico historicoAtualizado = historicoDAO.buscarPorPacienteId(pacienteCarregado.getId());
+        System.out.println("Nova descrição: " + historicoAtualizado.getDescricao());
+        System.out.println("Imagens salvas: " + historicoAtualizado.getCaminhosImagens());
     }
 }
