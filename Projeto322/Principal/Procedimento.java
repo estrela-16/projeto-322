@@ -64,14 +64,19 @@ public class Procedimento {
         materiais.remove(m);
     }
 
-    public double calcularCustoTotal() {
+    public double calcularGastos(){
         double total = 0;
         for (Materiais m : materiais) {
             total += m.getValor();
         }
+        return total+gastos.gastosTotais();
+    }
+
+    public double calcularCustoTotal() {
         double taxa;
         taxa = gastos.getTaxaServico();
-        total = taxa*(total + gastos.gastosTotais());
+        double gastos=calcularGastos();
+        double total = taxa*(gastos);
 
         return total;
     }
