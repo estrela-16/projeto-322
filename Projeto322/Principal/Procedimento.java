@@ -3,17 +3,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Procedimento {
+    private int id;
     private String nome;
     private String especialidade;
     private List<Materiais> materiais;
     private CalculodeGastos gastos;
-    private int id;
     private double preco;
 
-    public Procedimento(String nome, String especialidade) {
+    public Procedimento(String nome, String especialidade, CalculodeGastos gastos) {
+        this.id=0;
         this.nome = nome;
         this.especialidade = especialidade;
+        this.gastos=gastos;
         this.materiais = new ArrayList<>();
+        this.preco=calcularCustoTotal();
     }
 
     // Construtor para recuperar do banco de dados
@@ -44,7 +47,6 @@ public class Procedimento {
     }
 
     public double getPreco(){
-        this.preco=this.calcularCustoTotal();
         return this.calcularCustoTotal();
     }
 
@@ -58,10 +60,12 @@ public class Procedimento {
 
     public void adicionarMaterial(Materiais m) {
         materiais.add(m);
+        this.preco= this.calcularCustoTotal();
     }
 
     public void removerMaterial(Materiais m) {
         materiais.remove(m);
+        this.preco=this.calcularCustoTotal();
     }
 
     public double calcularGastos(){

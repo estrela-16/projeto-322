@@ -25,7 +25,7 @@ public class ProcedimentoDAO {
 
             stmt.setString(1, procedimento.getNome());
             stmt.setString(2, procedimento.getEspecialidade());
-            stmt.setDouble(3, procedimento.getPreco()); // Agora usa o getter simples
+            stmt.setDouble(3, procedimento.getPreco()); 
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
