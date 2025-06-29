@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors; // Import necessário para o `joining`
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -20,6 +21,8 @@ public class ClinicaOdontoGUI extends JFrame {
     private JPanel financeiroPanel;
     private JPanel materiaisPanel;
     private JPanel geralPanel;
+    private DefaultListModel<Materiais> materiaisListModel;
+    private JList<Materiais> materiaisJList;
 
     private JTable pacientesTable;
     private DefaultTableModel pacientesTableModel;
@@ -27,6 +30,8 @@ public class ClinicaOdontoGUI extends JFrame {
     private DefaultTableModel dentistasTableModel;
     private JTable materiaisTable;
     private DefaultTableModel materiaisTableModel;
+    private JTable procedimentosTable;
+    private DefaultTableModel procedimentosTableModel;
 
     private List<Paciente> pacientes;
     private List<Dentista> dentistas;
@@ -37,7 +42,6 @@ public class ClinicaOdontoGUI extends JFrame {
     private GerenciarProcedimento gerenciarProcedimento;
     private Agenda agenda;
     private Financeiro financeiro;
-
 
     public ClinicaOdontoGUI() {
         super("Sistema de Gerenciamento Odontológico");
@@ -52,7 +56,7 @@ public class ClinicaOdontoGUI extends JFrame {
         materiaiscomuns = new ArrayList<>();
         agenda = new Agenda();
         financeiro = new Financeiro(agenda, 0.3);
-        gerenciarProcedimento= new GerenciarProcedimento();
+        gerenciarProcedimento = new GerenciarProcedimento();
 
         tabbedPane = new JTabbedPane();
         createMenuBar();
@@ -85,7 +89,7 @@ public class ClinicaOdontoGUI extends JFrame {
         agendaPanel = createAgendaPanel();
         tabbedPane.addTab("Agenda", agendaPanel);
 
-        procedimentosPanel = new JPanel();
+        procedimentosPanel = createProcedimentosPanel();
         tabbedPane.addTab("Procedimentos", procedimentosPanel);
 
         financeiroPanel = createFinanceiroPanel();
@@ -96,9 +100,118 @@ public class ClinicaOdontoGUI extends JFrame {
 
         geralPanel = new GeralUI(contas, materiaiscomuns);
         tabbedPane.addTab("Gastos Gerais", geralPanel);
+
+        tabbedPane.addChangeListener(e -> {
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        String selectedTitle = tabbedPane.getTitleAt(selectedIndex);
+            if ("Procedimentos".equals(selectedTitle)) {
+        atualizarListaMateriaisProcedimentos();
+    }
+});
     }
     
-       private JPanel createFinanceiroPanel() {
+    private JPanel createProcedimentosPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        String[] colunas = {"Procedimento", "Especialidade", "Materiais Utilizados"};
+        procedimentosTableModel = new DefaultTableModel(colunas, 0);
+        procedimentosTable = new JTable(procedimentosTableModel);
+        JScrollPane scrollPane = new JScrollPane(procedimentosTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel cadastroPanel = new JPanel(new GridBagLayout());
+        cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Procedimento"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        var mapaDeProcedimentos = new java.util.HashMap<String, String[]>();
+        mapaDeProcedimentos.put("Clínica Geral", new String[]{"Aplicação tópica de flúor", "Profilaxia", "Anamnese", "Restauração em resina", "Extração simples", "Tratamento de cáries iniciais"});
+        mapaDeProcedimentos.put("Endodontia", new String[]{"Tratamento endodôntico", "Retratamento de canal", "Curativo endodôntico de urgência", "Pulpotomia"});
+        mapaDeProcedimentos.put("Ortodontia", new String[]{"Avaliação ortodôntica", "Instalação de aparelho fixo", "Manutenção de aparelho ortodôntico", "Remoção de aparelho e contenção", "Instalação de aparelhos removíveis"});
+        mapaDeProcedimentos.put("Implantodontia", new String[]{"Cirurgia de instalação de implantes", "Colocação de pilar cicatricial", "Prótese sobre implante", "Manutenção e acompanhamento de implantes"});
+
+        JLabel especialidadeLabel = new JLabel("Especialidade:");
+        JComboBox<String> especialidadeComboBox = new JComboBox<>(mapaDeProcedimentos.keySet().toArray(new String[0]));
+
+        JLabel procedimentoLabel = new JLabel("Procedimento:");
+        JComboBox<String> procedimentoComboBox = new JComboBox<>();
+
+        especialidadeComboBox.addActionListener(e -> {
+            String especialidadeSelecionada = (String) especialidadeComboBox.getSelectedItem();
+            procedimentoComboBox.removeAllItems();
+            if (especialidadeSelecionada != null) {
+                String[] procedimentos = mapaDeProcedimentos.get(especialidadeSelecionada);
+                for (String proc : procedimentos) {
+                    procedimentoComboBox.addItem(proc);
+                }
+            }
+        });
+        especialidadeComboBox.setSelectedIndex(0);
+
+        JLabel selecionarMateriaisLabel = new JLabel("Selecione os Materiais:");
+        materiaisListModel = new DefaultListModel<>();
+        for (Materiais mat : this.materiais) {
+            materiaisListModel.addElement(mat);
+        }
+        materiaisJList = new JList<>(materiaisListModel);
+        materiaisJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane materiaisScrollPane = new JScrollPane(materiaisJList);
+        materiaisScrollPane.setPreferredSize(new Dimension(250, 100));
+
+        JButton adicionarProcedimentoButton = new JButton("Adicionar Procedimento à Lista");
+        adicionarProcedimentoButton.addActionListener(e -> {
+            String especialidade = (String) especialidadeComboBox.getSelectedItem();
+            String nomeProcedimento = (String) procedimentoComboBox.getSelectedItem();
+
+            List<Materiais> materiaisSelecionados = materiaisJList.getSelectedValuesList();
+
+            if (nomeProcedimento == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um procedimento válido.", "Atenção", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Procedimento novoProcedimento = new Procedimento(nomeProcedimento, especialidade);
+            for (Materiais materialSelecionado : materiaisSelecionados) {
+                novoProcedimento.adicionarMaterial(materialSelecionado);
+            }
+
+            gerenciarProcedimento.adicionarProcedimento(novoProcedimento);
+            atualizarTabelaProcedimentos();
+            materiaisJList.clearSelection();
+            JOptionPane.showMessageDialog(this, "Procedimento '" + nomeProcedimento + "' adicionado com sucesso!");
+        });
+
+        int y = 0;
+        gbc.gridx = 0; gbc.gridy = y; gbc.anchor = GridBagConstraints.LINE_END; cadastroPanel.add(especialidadeLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = y; gbc.anchor = GridBagConstraints.LINE_START; cadastroPanel.add(especialidadeComboBox, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; gbc.anchor = GridBagConstraints.LINE_END; cadastroPanel.add(procedimentoLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = y; gbc.anchor = GridBagConstraints.LINE_START; cadastroPanel.add(procedimentoComboBox, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y; gbc.anchor = GridBagConstraints.NORTHEAST; cadastroPanel.add(selecionarMateriaisLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = y; gbc.anchor = GridBagConstraints.LINE_START; cadastroPanel.add(materiaisScrollPane, gbc);
+
+        gbc.gridx = 1; gbc.gridy = ++y; gbc.anchor = GridBagConstraints.CENTER; gbc.fill = GridBagConstraints.NONE; cadastroPanel.add(adicionarProcedimentoButton, gbc);
+
+        panel.add(cadastroPanel, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    private void atualizarTabelaProcedimentos() {
+        procedimentosTableModel.setRowCount(0);
+
+        for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
+            List<Materiais> materiaisDoProcedimento = p.getMateriais();
+            String nomesMateriais = materiaisDoProcedimento.stream()
+                                      .map(Materiais::getNome)
+                                      .collect(Collectors.joining(", "));
+            procedimentosTableModel.addRow(new Object[]{p.getNome(), p.getEspecialidade(), nomesMateriais});
+        }
+    }
+
+    private JPanel createFinanceiroPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -148,13 +261,12 @@ public class ClinicaOdontoGUI extends JFrame {
                 Object newValue = pacientesTableModel.getValueAt(row, column);
 
                 switch (column) {
-                    case 0 -> p.setNome((String) newValue);
-                    case 1 -> p.setTelefone((String) newValue);
-                    case 2 -> p.setCpf((String) newValue);
+                    case 0: p.setNome((String) newValue); break;
+                    case 1: p.setTelefone((String) newValue); break;
+                    case 2: p.setCpf((String) newValue); break;
                 }
             }
-        }
-        );
+        });
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
@@ -205,7 +317,6 @@ public class ClinicaOdontoGUI extends JFrame {
         }
     }
 
-
     private JPanel createDentistasPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -221,14 +332,13 @@ public class ClinicaOdontoGUI extends JFrame {
                 Object newValue = dentistasTableModel.getValueAt(row, column);
 
                 switch (column) {
-                    case 0 -> d.setNome((String) newValue);
-                    case 1 -> d.setTelefone((String) newValue);
-                    case 2 -> d.setCpf((String) newValue);
-                    case 3 -> d.setCro((String) newValue);
+                    case 0: d.setNome((String) newValue); break;
+                    case 1: d.setTelefone((String) newValue); break;
+                    case 2: d.setCpf((String) newValue); break;
+                    case 3: d.setCro((String) newValue); break;
                 }
             }
-        }
-        );
+        });
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
@@ -284,159 +394,150 @@ public class ClinicaOdontoGUI extends JFrame {
         }
     }
     
-
     private JPanel createAgendaPanel() {
+        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear(), pacientes, dentistas, gerenciarProcedimento);
+    }
+
+    private JPanel createMateriaisPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        AgendaUI agendaUI = new AgendaUI(agenda, java.time.LocalDate.now().getMonthValue(), java.time.LocalDate.now().getYear(), pacientes, dentistas, gerenciarProcedimento);
-        panel.add(agendaUI, BorderLayout.CENTER);
-        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear(),  pacientes, dentistas, gerenciarProcedimento);
-    }
 
-   private JPanel createMateriaisPanel() {
-    JPanel panel = new JPanel(new BorderLayout());
-
-    // Modelo com coluna de botão "Remover"
-    materiaisTableModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == 2; // apenas a coluna do botão é editável
-        }
-    };
-
-    materiaisTable = new JTable(materiaisTableModel);
-
-
-    // Reduz a largura da coluna do botão
-    TableColumn colunaBotao = materiaisTable.getColumnModel().getColumn(2);
-    colunaBotao.setPreferredWidth(30); // largura pequena
-    colunaBotao.setMaxWidth(30);
-    colunaBotao.setMinWidth(30);
-
-    colunaBotao.setCellRenderer(new ButtonRenderer());
-    colunaBotao.setCellEditor(new ButtonEditor(new JCheckBox()));
-
-    JScrollPane scrollPane = new JScrollPane(materiaisTable);
-    panel.add(scrollPane, BorderLayout.CENTER);
-
-    JPanel cadastroPanel = new JPanel(new GridBagLayout());
-    cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Material"));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(5, 5, 5, 5);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-
-    JLabel nomeLabel = new JLabel("Nome:");
-    JTextField nomeField = new JTextField(20);
-    JLabel valorLabel = new JLabel("Valor (R$):");
-    JTextField valorField = new JTextField(10);
-    JButton cadastrarButton = new JButton("Cadastrar Material");
-
-    gbc.gridx = 0; gbc.gridy = 0; cadastroPanel.add(nomeLabel, gbc);
-    gbc.gridx = 1; gbc.gridy = 0; cadastroPanel.add(nomeField, gbc);
-    gbc.gridx = 0; gbc.gridy = 1; cadastroPanel.add(valorLabel, gbc);
-    gbc.gridx = 1; gbc.gridy = 1; cadastroPanel.add(valorField, gbc);
-    gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; cadastroPanel.add(cadastrarButton, gbc);
-
-    cadastrarButton.addActionListener(e -> {
-        String nome = nomeField.getText();
-        String valorTexto = valorField.getText();
-        if (nome.isEmpty() || valorTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos.");
-            return;
-        }
-        try {
-            double valor = Double.parseDouble(valorTexto);
-            materiais.add(new Materiais(nome, valor));
-            materiais.sort(Comparator.comparing(Materiais::getNome));
-            atualizarTabelaMateriais();
-            nomeField.setText(""); valorField.setText("");
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Valor inválido.");
-        }
-    });
-
-    
-
-    panel.add(cadastroPanel, BorderLayout.SOUTH);
-    atualizarTabelaMateriais(); // Carrega os dados ao abrir
-    return panel;
-}
-
-// Renderizador de botão "Remover"
-private class ButtonRenderer extends JButton implements TableCellRenderer {
-    public ButtonRenderer() {
-        setOpaque(true);
-          setText("⋮"); // símbolo de três pontos verticais
-        setFont(new Font("SansSerif", Font.PLAIN, 14));
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
-        boolean isSelected, boolean hasFocus, int row, int column) {
-        return this;
-    }
-}
-
-// Editor que trata clique no botão "Remover"
-private class ButtonEditor extends DefaultCellEditor {
-    private JButton button;
-    private boolean clicked;
-    private int row;
-
-    public ButtonEditor(JCheckBox checkBox) {
-        super(checkBox);
-        button = new JButton("⋮");
-        button.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        button.setOpaque(true);
-        button.addActionListener(e -> fireEditingStopped());
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
-        this.row = row;
-        clicked = true;
-        return button;
-    }
-
-  @Override
-    public Object getCellEditorValue() {
-        if (clicked) {
-            int resposta = JOptionPane.showOptionDialog(
-            button,
-            "Remover este material?",
-            "Confirmação",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            new Object[]{"Sim", "Não"},
-            "Não"
-);
-            if (resposta == JOptionPane.YES_OPTION && row < materiais.size()) {
-                materiais.remove(row);
-                atualizarTabelaMateriais();
+        materiaisTableModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 2;
             }
-        }
-        clicked = false;
-        return "⋮";
-    }
+        };
 
-    @Override
-    public boolean stopCellEditing() {
-        clicked = false;
-        return super.stopCellEditing();
-    }
+        materiaisTable = new JTable(materiaisTableModel);
 
-    @Override
-    protected void fireEditingStopped() {
-        super.fireEditingStopped();
-    }
-}
+        TableColumn colunaBotao = materiaisTable.getColumnModel().getColumn(2);
+        colunaBotao.setPreferredWidth(30);
+        colunaBotao.setMaxWidth(30);
+        colunaBotao.setMinWidth(30);
 
-   
+        colunaBotao.setCellRenderer(new ButtonRenderer());
+        colunaBotao.setCellEditor(new ButtonEditor(new JCheckBox()));
+
+        JScrollPane scrollPane = new JScrollPane(materiaisTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel cadastroPanel = new JPanel(new GridBagLayout());
+        cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Material"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel nomeLabel = new JLabel("Nome:");
+        JTextField nomeField = new JTextField(20);
+        JLabel valorLabel = new JLabel("Valor (R$):");
+        JTextField valorField = new JTextField(10);
+        JButton cadastrarButton = new JButton("Cadastrar Material");
+
+        gbc.gridx = 0; gbc.gridy = 0; cadastroPanel.add(nomeLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 0; cadastroPanel.add(nomeField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; cadastroPanel.add(valorLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 1; cadastroPanel.add(valorField, gbc);
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; cadastroPanel.add(cadastrarButton, gbc);
+
+        cadastrarButton.addActionListener(e -> {
+            String nome = nomeField.getText();
+            String valorTexto = valorField.getText();
+            if (nome.isEmpty() || valorTexto.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos.");
+                return;
+            }
+            try {
+                double valor = Double.parseDouble(valorTexto);
+                materiais.add(new Materiais(nome, valor));
+                materiais.sort(Comparator.comparing(Materiais::getNome));
+                atualizarTabelaMateriais();
+                nomeField.setText(""); valorField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Valor inválido.");
+            }
+        });
+
+        panel.add(cadastroPanel, BorderLayout.SOUTH);
+        atualizarTabelaMateriais();
+        return panel;
+    }
+    
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);
         for (Materiais m : materiais) {
-            materiaisTableModel.addRow(new Object[]{m.getNome(), m.getValor()});
+            materiaisTableModel.addRow(new Object[]{m.getNome(), m.getValor(), "⋮"});
+        }
+    }
+
+    private class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setText("⋮");
+            setFont(new Font("SansSerif", Font.PLAIN, 14));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    private void atualizarListaMateriaisProcedimentos() {
+    if (materiaisListModel == null) return;
+    materiaisListModel.clear();
+    for (Materiais mat : materiais) {
+        materiaisListModel.addElement(mat);
+    }
+}
+
+    private class ButtonEditor extends DefaultCellEditor {
+        private JButton button;
+        private boolean clicked;
+        private int row;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton("⋮");
+            button.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            button.setOpaque(true);
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            this.row = row;
+            clicked = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (clicked) {
+                int resposta = JOptionPane.showOptionDialog(
+                    button, "Remover este material?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, new Object[]{"Sim", "Não"}, "Não"
+                );
+                if (resposta == JOptionPane.YES_OPTION && row < materiais.size()) {
+                    materiais.remove(row);
+                    atualizarTabelaMateriais();
+                }
+            }
+            clicked = false;
+            return "⋮";
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            clicked = false;
+            return super.stopCellEditing();
+        }
+
+        @Override
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
         }
     }
 

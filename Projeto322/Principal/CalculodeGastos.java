@@ -8,6 +8,10 @@ public class CalculodeGastos {
     private List<Contas>conta;
     private double comissao;
     private double servico;
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/main
 
 
     public CalculodeGastos(){
@@ -67,6 +71,19 @@ public class CalculodeGastos {
         total = contaMatComum +contas;
 
         return total;
+    }
+
+    public void setNumeroDeConsultas(int num){
+        this.numerodeconsultas = num;
+    }
+
+    public void setComissao(double comissao){
+        this.comissao = comissao;
+
+    }
+
+    public void setTaxaServico(double servico){
+        this.servico = servico;
     }
 
 }
