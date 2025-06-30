@@ -68,7 +68,7 @@ public class ClinicaOdontoGUI extends JFrame {
         setSize(900, 700);
         setLocationRelativeTo(null);
 
-        //--- INICIALIZAÇÃO DOS DAOS ---
+        //--- 1. INICIALIZAÇÃO DOS DAOs ---
         this.pacienteDAO = new PacienteDAO();
         this.dentistaDAO = new DentistaDAO();
         this.materiaisDAO = new MateriaisDAO();
@@ -77,14 +77,14 @@ public class ClinicaOdontoGUI extends JFrame {
         this.contasDAO = new ContasDAO();
         this.materiaisComunsDAO = new MateriaisComunsDAO();
 
-        //--- CARREGAMENTO CORRETO DOS DADOS DO BANCO ---
+        //--- 2. CARREGAMENTO DOS DADOS DO BANCO ---
         pacientes = pacienteDAO.buscarTodos();
         dentistas = dentistaDAO.buscarTodos();
         materiais = materiaisDAO.buscarTodos();
-        contas = contasDAO.buscarTodos(); // Carrega os dados
-        materiaiscomuns = materiaisComunsDAO.buscarTodos(); // Carrega os dados
+        contas = contasDAO.buscarTodos();
+        materiaiscomuns = materiaisComunsDAO.buscarTodos();
 
-        //--- INICIALIZAÇÃO DOS OBJETOS DE NEGÓCIO ---
+        //--- 3. INICIALIZAÇÃO DOS OBJETOS DE NEGÓCIO ---
         agenda = new Agenda();
         agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
         
@@ -92,13 +92,26 @@ public class ClinicaOdontoGUI extends JFrame {
         gerenciarProcedimento.getProcedimentos().addAll(procedimentoDAO.buscarTodos());
         
         financeiro = new Financeiro(agenda, 0);
+        
         gastos = new CalculodeGastos();
+        gastos.setConta(contas);
+        gastos.setMateriaisComunses(materiaiscomuns);
 
+        //--- 4. VINCULAÇÃO DO OBJETO 'GASTOS' ---
+        // Vincula o 'gastos' aos procedimentos da lista principal
         for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
             p.setGastos(this.gastos);
         }
+        
+        // **CORREÇÃO ADICIONADA AQUI**
+        // Garante que os procedimentos DENTRO dos atendimentos também tenham o 'gastos' vinculado.
+        for (Atendimento a : agenda.getTodos()) {
+            if (a.getProcedimentos() != null) {
+                a.getProcedimentos().setGastos(this.gastos);
+            }
+        }
 
-        //--- CRIAÇÃO DA INTERFACE GRÁFICA ---
+        //--- 5. CRIAÇÃO DA INTERFACE GRÁFICA ---
         tabbedPane = new JTabbedPane();
         createMenuBar();
         createTabs();
@@ -106,6 +119,7 @@ public class ClinicaOdontoGUI extends JFrame {
         add(tabbedPane, BorderLayout.CENTER);
         setVisible(true);
     }
+
 
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
