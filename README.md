@@ -79,7 +79,7 @@ A aba "Financeiro" apresenta um relatório anual, mês a mês. Os cálculos são
 
 Para um funcionamento correto e para que os cálculos de preço sejam precisos, é altamente recomendado seguir a ordem abaixo ao inserir os dados no sistema pela primeira vez:
 
-1.  **Cadastrar Dentistas e Pacientes:** Para rodar o código, execute o arquivo `TelaInicial.java`. Ele abrirá a primeira tela do sistema.
+1.  **Inicie a aplicação:** Para rodar o código, execute o arquivo `TelaInicial.java`. Ele abrirá a primeira tela do sistema.
 2.  **Cadastrar Dentistas e Pacientes:** Comece inserindo as pessoas nas abas "Dentistas" e "Pacientes".
 3.  **Cadastrar Materiais Específicos:** Na aba "Materiais", adicione todos os materiais que são usados em procedimentos específicos (ex: resina, brocas, implantes).
 4.  **Configurar Gastos Gerais:**
