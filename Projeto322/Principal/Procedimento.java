@@ -9,6 +9,7 @@ public class Procedimento implements Id_Banco{
     private List<Materiais> materiais;
     private CalculodeGastos gastos;
     private double preco;
+    private List<Double> valoresMateriais;
 
     public Procedimento(String nome, String especialidade, CalculodeGastos gastos) {
         this.id=0;
@@ -16,7 +17,8 @@ public class Procedimento implements Id_Banco{
         this.especialidade = especialidade;
         this.gastos=gastos;
         this.materiais = new ArrayList<>();
-        this.preco=calcularCustoTotal();
+        this.valoresMateriais = new ArrayList<>();
+        this.preco =calcularCustoTotal();
     }
 
     // Construtor para recuperar do banco de dados
@@ -62,18 +64,24 @@ public class Procedimento implements Id_Banco{
 
     public void adicionarMaterial(Materiais m) {
         materiais.add(m);
-        this.preco= this.calcularCustoTotal();
+        valoresMateriais.add(m.getValor());
+        this.preco = this.calcularCustoTotal();
+
     }
 
     public void removerMaterial(Materiais m) {
-        materiais.remove(m);
-        this.preco=this.calcularCustoTotal();
+        int index = materiais.indexOf(m);
+        if (index >= 0) {
+        materiais.remove(index);
+        valoresMateriais.remove(index);
+        this.preco = this.calcularCustoTotal();
+    }
     }
 
     public double calcularGastos(){
         double total = 0;
-        for (Materiais m : materiais) {
-            total += m.getValor();
+        for (int i = 0; i< valoresMateriais.size(); i++) {
+            total += valoresMateriais.get(i);
         }
         return total+gastos.gastosTotais();
     }
@@ -81,10 +89,13 @@ public class Procedimento implements Id_Banco{
     public double calcularCustoTotal() {
         double taxa;
         taxa = gastos.getTaxaServico();
-        double gastos=calcularGastos();
-        double total = taxa*(gastos);
+        double g =calcularGastos();
+        double total = taxa*(g);
 
         return total;
+    }
+    public List<Double> getValoresMateriais() {
+        return valoresMateriais;
     }
 
     @Override

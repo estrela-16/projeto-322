@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.swing.*;
+import DAO.AtendimentoDAO;
 
 public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
     private Agenda agenda;
@@ -19,14 +20,16 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
     private List<Paciente> pacientes;
     private List<Dentista> dentistas;
     private GerenciarProcedimento gerencia;
+    private AtendimentoDAO atendimentoDAO;
 
 
-    public AgendaUI(Agenda agenda, int mes, int ano, List<Paciente> pacientes, List<Dentista> dentistas,  GerenciarProcedimento gerencia) {
+    public AgendaUI(Agenda agenda, int mes, int ano, List<Paciente> pacientes, List<Dentista> dentistas,  GerenciarProcedimento gerencia, AtendimentoDAO atendimentoDAO) {
         this.agenda = agenda;
         this.mesAnoAtual = YearMonth.of(ano, mes);
         this.pacientes = pacientes;
         this.dentistas = dentistas;
         this.gerencia = gerencia;
+        this.atendimentoDAO = atendimentoDAO;
 
         setLayout(new BorderLayout());
 
@@ -195,6 +198,7 @@ private void mostrarAtendimentosDoDia(LocalDate data) {
 
                 Atendimento novo = new Atendimento(data, hora, procedimento, paciente, dentista,StatusPagamento.NAO_PAGO);
 
+                atendimentoDAO.inserir(novo);
                 agenda.agendarAtendimento(novo);
                 atualizarCalendario();
                 mostrarAtendimentosDoDia(data);

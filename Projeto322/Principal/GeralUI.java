@@ -5,17 +5,20 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 
+
 public class GeralUI extends JPanel {
     private List<Contas> contas;
     private List<MateriaisComuns> materiaisComuns;
     private ClinicaOdontoGUI clinica;
     private DefaultTableModel contasModel;
     private DefaultTableModel materiaisModel;
+    private CalculodeGastos calculo;
 
-    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns, ClinicaOdontoGUI clinica) {
+    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns, ClinicaOdontoGUI clinica, CalculodeGastos calculo) {
         this.contas = contas;
         this.materiaisComuns = materiaisComuns;
         this.clinica = clinica;
+        this.calculo=calculo;
         setLayout(new BorderLayout());
 
         JPanel conteudo = new JPanel();
@@ -32,21 +35,20 @@ public class GeralUI extends JPanel {
 
         configPanel.add(new JLabel("Consultas no mês:"));
         configPanel.add(consultasField);
-        configPanel.add(new JLabel("Comissão (%):"));
+        configPanel.add(new JLabel("Comissão:"));
         configPanel.add(comissaoField);
-        configPanel.add(new JLabel("Taxa de Serviço (%):"));
+        configPanel.add(new JLabel("Taxa de Serviço:"));
         configPanel.add(taxaServicoField);
         configPanel.add(salvarBtn);
 
         salvarBtn.addActionListener(e -> {
             try {
                 int consultas = Integer.parseInt(consultasField.getText());
-                double comissao = Double.parseDouble(comissaoField.getText()) / 100.0;
-                double taxaServico = Double.parseDouble(taxaServicoField.getText()) / 100.0;
+                double comissao = Double.parseDouble(comissaoField.getText());
+                double taxaServico = Double.parseDouble(taxaServicoField.getText());
 
-                CalculodeGastos calculo = new CalculodeGastos();
-                calculo.getMateriaisComunses().addAll(materiaisComuns);
-                calculo.getConta().addAll(contas);
+                calculo.setMateriaisComunses(materiaisComuns);
+                calculo.setConta(contas);
                 calculo.setNumeroDeConsultas(consultas);
                 calculo.setComissao(comissao);
                 calculo.setTaxaServico(taxaServico);
@@ -116,6 +118,7 @@ public class GeralUI extends JPanel {
             try {
                 double valor = Double.parseDouble(valorTexto);
                 contas.add(new Contas(nome, valor));
+                calculo.getConta().addAll(contas);
                 atualizarTabelaContas();
                 nomeContaField.setText("");
                 valorContaField.setText("");
@@ -172,6 +175,7 @@ public class GeralUI extends JPanel {
                 double valor = Double.parseDouble(valorTexto);
                 int qtd = Integer.parseInt(qtdTexto);
                 materiaisComuns.add(new MateriaisComuns(nome, valor, qtd));
+                calculo.getMateriaisComunses().addAll(materiaisComuns);
                 atualizarTabelaMateriais();
                 nomeMaterialField.setText("");
                 valorMaterialField.setText("");

@@ -11,6 +11,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import DAO.AtendimentoDAO;
+import DAO.DentistaDAO;
+import DAO.MateriaisDAO;
+import DAO.PacienteDAO;
+import DAO.ProcedimentoDAO;
+
 public class ClinicaOdontoGUI extends JFrame {
 
     private JTabbedPane tabbedPane;
@@ -44,25 +50,54 @@ public class ClinicaOdontoGUI extends JFrame {
     private Financeiro financeiro;
     private CalculodeGastos gastos;
 
+    //DAOs do banco de dados:
+    private PacienteDAO pacienteDAO;
+    private DentistaDAO dentistaDAO;
+    private MateriaisDAO materiaisDAO;
+    private ProcedimentoDAO procedimentoDAO;
+    private AtendimentoDAO atendimentoDAO;
+
     public ClinicaOdontoGUI() {
         super("Sistema de Gerenciamento Odontológico");
+        CriadorTabelas.criarTabelas();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);
 
-        pacientes = new ArrayList<>();
-        dentistas = new ArrayList<>();
-        materiais = new ArrayList<>();
+        //Definindo base de dados
+        this.pacienteDAO = new PacienteDAO();
+        this.dentistaDAO = new DentistaDAO();
+        this.materiaisDAO = new MateriaisDAO();
+        this.procedimentoDAO = new ProcedimentoDAO();
+        this.atendimentoDAO = new AtendimentoDAO();
+
+       pacientes = pacienteDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        dentistas = dentistaDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        materiais = materiaisDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        agenda = new Agenda();
+        agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
+        gerenciarProcedimento = new GerenciarProcedimento();
+        gerenciarProcedimento.getProcedimentos().addAll(procedimentoDAO.buscarTodos());
+        financeiro = new Financeiro(agenda, 0);
+        gastos= new CalculodeGastos();
         contas = new ArrayList<>();
         materiaiscomuns = new ArrayList<>();
-        agenda = new Agenda();
-        financeiro = new Financeiro(agenda, 0);
-        gerenciarProcedimento = new GerenciarProcedimento();
-        gastos= new CalculodeGastos();
 
         tabbedPane = new JTabbedPane();
         createMenuBar();
         createTabs();
+
+        pacientes = pacienteDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        dentistas = dentistaDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        materiais = materiaisDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        agenda = new Agenda();
+        agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
+        gerenciarProcedimento = new GerenciarProcedimento();
+        gerenciarProcedimento.getProcedimentos().addAll(procedimentoDAO.buscarTodos());
+        financeiro = new Financeiro(agenda, 0);
+        gastos= new CalculodeGastos();
+        contas = new ArrayList<>();
+        materiaiscomuns = new ArrayList<>();
 
         add(tabbedPane, BorderLayout.CENTER);
 
@@ -100,7 +135,7 @@ public class ClinicaOdontoGUI extends JFrame {
         materiaisPanel = createMateriaisPanel();
         tabbedPane.addTab("Materiais", materiaisPanel);
 
-        geralPanel = new GeralUI(contas, materiaiscomuns, this);
+        geralPanel = new GeralUI(contas, materiaiscomuns, this, gastos);
         tabbedPane.addTab("Gastos Gerais", geralPanel);
 
         tabbedPane.addChangeListener(e -> {
@@ -116,7 +151,7 @@ public class ClinicaOdontoGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] colunas = {"Procedimento", "Especialidade", "Materiais Utilizados"};
+        String[] colunas = {"Procedimento", "Especialidade", "Materiais Utilizados","Valor Total (R$)"};
         procedimentosTableModel = new DefaultTableModel(colunas, 0);
         procedimentosTable = new JTable(procedimentosTableModel);
         JScrollPane scrollPane = new JScrollPane(procedimentosTable);
@@ -179,6 +214,8 @@ public class ClinicaOdontoGUI extends JFrame {
                 novoProcedimento.adicionarMaterial(materialSelecionado);
             }
 
+            procedimentoDAO.inserir(novoProcedimento);
+
             gerenciarProcedimento.adicionarProcedimento(novoProcedimento);
             atualizarTabelaProcedimentos();
             materiaisJList.clearSelection();
@@ -201,17 +238,26 @@ public class ClinicaOdontoGUI extends JFrame {
         return panel;
     }
 
-    private void atualizarTabelaProcedimentos() {
-        procedimentosTableModel.setRowCount(0);
+private void atualizarTabelaProcedimentos() {
+    procedimentosTableModel.setRowCount(0);
 
-        for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
-            List<Materiais> materiaisDoProcedimento = p.getMateriais();
-            String nomesMateriais = materiaisDoProcedimento.stream()
-                                      .map(Materiais::getNome)
-                                      .collect(Collectors.joining(", "));
-            procedimentosTableModel.addRow(new Object[]{p.getNome(), p.getEspecialidade(), nomesMateriais});
-        }
+    for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
+        List<Materiais> materiaisDoProcedimento = p.getMateriais();
+        String nomesMateriais = materiaisDoProcedimento.stream()
+                                  .map(Materiais::getNome)
+                                  .collect(Collectors.joining(", "));
+        
+        double custoFinal = p.calcularCustoTotal(); // Já inclui materiais e taxa
+
+        procedimentosTableModel.addRow(new Object[]{
+            p.getNome(),
+            p.getEspecialidade(),
+            nomesMateriais,
+            String.format("R$ %.2f", custoFinal)
+        });
     }
+}
+
     public void atualizarComissaoFinanceiro(double novaComissao) {
         financeiro.setPercentualComissao(novaComissao);
     }
@@ -269,9 +315,10 @@ public class ClinicaOdontoGUI extends JFrame {
                     case 1: p.setTelefone((String) newValue); break;
                     case 2: p.setCpf((String) newValue); break;
                 }
+                pacienteDAO.atualizar(p);
             }
         });
-        panel.add(scrollPane, BorderLayout.CENTER);
+       panel.add(scrollPane,BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
         cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Paciente"));
@@ -305,7 +352,9 @@ public class ClinicaOdontoGUI extends JFrame {
                 return;
             }
 
-            pacientes.add(new Paciente(nome, cpf, telefone));
+            Paciente novoPaciente = new Paciente(nome, cpf,telefone);
+            pacienteDAO.inserir(novoPaciente);
+            pacientes.add(novoPaciente);
             atualizarTabelaPacientes();
             nomeField.setText(""); telefoneField.setText(""); cpfField.setText("");
         });
@@ -328,7 +377,8 @@ public class ClinicaOdontoGUI extends JFrame {
         dentistasTableModel = new DefaultTableModel(colunas, 0);
         dentistasTable = new JTable(dentistasTableModel);
         JScrollPane scrollPane = new JScrollPane(dentistasTable);
-         dentistasTableModel.addTableModelListener(e -> {
+        
+        dentistasTableModel.addTableModelListener(e -> {
             int row = e.getFirstRow();
             int column = e.getColumn();
             if (row >= 0 && column >= 0 && row < dentistas.size()){
@@ -341,6 +391,7 @@ public class ClinicaOdontoGUI extends JFrame {
                     case 2: d.setCpf((String) newValue); break;
                     case 3: d.setCro((String) newValue); break;
                 }
+                dentistaDAO.atualizar(d);
             }
         });
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -381,8 +432,12 @@ public class ClinicaOdontoGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Preencha todos os campos.");
                 return;
             }
+ 
+           Dentista novoDentista = new Dentista(nome, cpf, telefone, cro);
 
-            dentistas.add(new Dentista(nome, cpf, telefone, cro));
+           dentistaDAO.inserir(novoDentista);
+
+           dentistas.add(novoDentista);
             atualizarTabelaDentistas();
             nomeField.setText(""); telefoneField.setText(""); cpfField.setText(""); croField.setText("");
         });
@@ -399,7 +454,7 @@ public class ClinicaOdontoGUI extends JFrame {
     }
     
     private JPanel createAgendaPanel() {
-        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear(), pacientes, dentistas, gerenciarProcedimento);
+        return new AgendaUI(agenda, LocalDate.now().getMonthValue(), LocalDate.now().getYear(), pacientes, dentistas, gerenciarProcedimento, atendimentoDAO);
     }
 
     private JPanel createMateriaisPanel() {
@@ -452,6 +507,8 @@ public class ClinicaOdontoGUI extends JFrame {
             }
             try {
                 double valor = Double.parseDouble(valorTexto);
+                Materiais novoMaterial = new Materiais (nome, valor);
+                materiaisDAO.inserir(novoMaterial);
                 materiais.add(new Materiais(nome, valor));
                 materiais.sort(Comparator.comparing(Materiais::getNome));
                 atualizarTabelaMateriais();
@@ -536,6 +593,7 @@ public class ClinicaOdontoGUI extends JFrame {
                             "Este material está sendo usado em um procedimento e não pode ser removido.",
                             "Aviso", JOptionPane.WARNING_MESSAGE);
                     } else {
+                        materiaisDAO.deletar(materialSelecionado.getId());
                         materiais.remove(row);
                         atualizarTabelaMateriais();
                         atualizarListaMateriaisProcedimentos(); // também atualiza a JList de materiais

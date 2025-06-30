@@ -1,73 +1,75 @@
 package Principal;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CalculodeGastos {
     private List<MateriaisComuns> materialcomum;
-    private int numerodeconsultas;
-    private List<Contas>conta;
+    private int numerodeconsultas = 1;
+    private List<Contas> conta;
     private double comissao;
     private double servico;
 
-
-    public CalculodeGastos(){
+    public CalculodeGastos() {
         this.materialcomum = new ArrayList<>();
         this.conta = new ArrayList<>();
     }
 
-    public List<MateriaisComuns>getMateriaisComunses(){
+    public List<MateriaisComuns> getMateriaisComunses() {
         return materialcomum;
     }
 
-    public double getComissao(){
-        return comissao;
+    public void setMateriaisComunses(List<MateriaisComuns> materiais) {
+        this.materialcomum = new ArrayList<>(materiais);
     }
 
-    public List<Contas> getConta(){
+    public List<Contas> getConta() {
         return conta;
     }
 
-    public double getTaxaServico(){
-        return servico;
+    public void setConta(List<Contas> contas) {
+        this.conta = new ArrayList<>(contas);
     }
 
-    public double CalculodeMateriais(){
-        double total = 0;
-         for(int i = 0; i < materialcomum.size(); i++){   
-
-            total += (materialcomum.get(i).getQuantidade())*(materialcomum.get(i).getValor());
-         }
-         total = total/numerodeconsultas;
-        return total;
-    } 
     public void setNumeroDeConsultas(int num) {
-        this.numerodeconsultas = num;
+        this.numerodeconsultas = Math.max(1, num); // evita divisão por zero
     }
 
     public void setComissao(double comissao) {
         this.comissao = comissao;
     }
-    
-       public void setTaxaServico(double servico) {
+
+    public void setTaxaServico(double servico) {
         this.servico = servico;
     }
 
-    public double Contas(){
+    public double getComissao() {
+        return comissao;
+    }
+
+    public double getTaxaServico() {
+        return servico;
+    }
+
+    public double CalculodeMateriais() {
         double total = 0;
-        for(int i = 0; i < conta.size(); i++){
-            total += conta.get(i).getValor();
+        for (MateriaisComuns m : materialcomum) {
+            total += m.getQuantidade() * m.getValor();
         }
-        total = total/numerodeconsultas;
-        return total;
+        return total / numerodeconsultas;
     }
 
-    public double gastosTotais(){
+    public double Contas() {
         double total = 0;
-        double contaMatComum = CalculodeMateriais();
-        double contas = Contas();
-        total = contaMatComum +contas;
-
-        return total;
+        for (Contas c : conta) {
+            total += c.getValor();
+        }
+        return total / numerodeconsultas;
     }
 
+    public double gastosTotais() {
+        double materiais = CalculodeMateriais();
+        double contas = Contas();
+        return materiais + contas;
+    }
 }
