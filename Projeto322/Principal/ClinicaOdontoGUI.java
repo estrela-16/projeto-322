@@ -91,18 +91,6 @@ public class ClinicaOdontoGUI extends JFrame {
         createMenuBar();
         createTabs();
 
-        pacientes = pacienteDAO.buscarTodos(); // Em vez de new ArrayList<>();
-        dentistas = dentistaDAO.buscarTodos(); // Em vez de new ArrayList<>();
-        materiais = materiaisDAO.buscarTodos(); // Em vez de new ArrayList<>();
-        agenda = new Agenda();
-        agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
-        gerenciarProcedimento = new GerenciarProcedimento();
-        gerenciarProcedimento.getProcedimentos().addAll(procedimentoDAO.buscarTodos());
-        financeiro = new Financeiro(agenda, 0);
-        gastos= new CalculodeGastos();
-        contas = new ArrayList<>();
-        materiaiscomuns = new ArrayList<>();
-
         add(tabbedPane, BorderLayout.CENTER);
 
         setVisible(true);
@@ -213,7 +201,7 @@ public class ClinicaOdontoGUI extends JFrame {
                 return;
             }
 
-            Procedimento novoProcedimento = new Procedimento(nomeProcedimento, especialidade, gastos);
+            Procedimento novoProcedimento = new Procedimento(nomeProcedimento, especialidade, this.gastos);
             for (Materiais materialSelecionado : materiaisSelecionados) {
                 novoProcedimento.adicionarMaterial(materialSelecionado);
             }

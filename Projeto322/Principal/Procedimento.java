@@ -27,6 +27,7 @@ public class Procedimento implements Id_Banco{
         this.nome = nome;
         this.especialidade = especialidade;
         this.materiais = new ArrayList<>();
+        this.valoresMateriais = new ArrayList<>();
     }
 
     // Construtor vazio para atualizações
