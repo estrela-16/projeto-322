@@ -321,29 +321,44 @@ private void atualizarTabelaProcedimentos() {
     }
 
     private JPanel createPacientesPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(10, 10)); // Adicionado espaçamento
 
         String[] colunas = {"Nome", "Telefone", "CPF"};
-        pacientesTableModel = new DefaultTableModel(colunas, 0);
+        pacientesTableModel = new DefaultTableModel(colunas, 0) {
+            // Impede a edição direta na tabela
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         pacientesTable = new JTable(pacientesTableModel);
         JScrollPane scrollPane = new JScrollPane(pacientesTable);
 
-        pacientesTableModel.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int column = e.getColumn();
-            if (row >= 0 && column >= 0 && row < pacientes.size()){
-                Paciente p = pacientes.get(row);
-                Object newValue = pacientesTableModel.getValueAt(row, column);
+        // PAINEL DE BOTÕES (NOVO)
+        JPanel botoesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton verHistoricoButton = new JButton("Ver/Editar Histórico");
+        // Você pode adicionar outros botões aqui, como "Editar Paciente" ou "Remover"
+        botoesPanel.add(verHistoricoButton);
+        
+        // Adiciona os componentes ao painel principal
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(botoesPanel, BorderLayout.NORTH); // Botões acima da tabela
 
-                switch (column) {
-                    case 0: p.setNome((String) newValue); break;
-                    case 1: p.setTelefone((String) newValue); break;
-                    case 2: p.setCpf((String) newValue); break;
-                }
-                pacienteDAO.atualizar(p);
+        // Ação do botão para ver o histórico
+        verHistoricoButton.addActionListener(e -> {
+            int selectedRow = pacientesTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                // Pega o paciente selecionado na tabela
+                Paciente pacienteSelecionado = pacientes.get(selectedRow);
+
+                // Abre a nova janela de histórico para o paciente
+                HistoricoGUI historicoGUI = new HistoricoGUI(pacienteSelecionado);
+                historicoGUI.setVisible(true);
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um paciente na tabela primeiro.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
-       panel.add(scrollPane,BorderLayout.CENTER);
 
         JPanel cadastroPanel = new JPanel(new GridBagLayout());
         cadastroPanel.setBorder(BorderFactory.createTitledBorder("Cadastrar Novo Paciente"));
@@ -377,11 +392,13 @@ private void atualizarTabelaProcedimentos() {
                 return;
             }
 
-            Paciente novoPaciente = new Paciente(nome, cpf,telefone);
+            Paciente novoPaciente = new Paciente(nome, cpf, telefone);
             pacienteDAO.inserir(novoPaciente);
             pacientes.add(novoPaciente);
             atualizarTabelaPacientes();
-            nomeField.setText(""); telefoneField.setText(""); cpfField.setText("");
+            nomeField.setText("");
+            telefoneField.setText("");
+            cpfField.setText("");
         });
 
         panel.add(cadastroPanel, BorderLayout.SOUTH);
