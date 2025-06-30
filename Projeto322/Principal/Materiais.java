@@ -12,7 +12,7 @@ public Materiais(String nome, double valor){
 }
 //retornar materiais do bd
 public Materiais(int id, String nome, double valor){
-  this.id=0;
+  this.id=id;
   this.nome = nome;
   this.valor = valor;
 }

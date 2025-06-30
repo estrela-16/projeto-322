@@ -36,7 +36,8 @@ public class MateriaisDAO {
             // Recupera o ID gerado pelo banco e o define no objeto
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    material.setId(rs.getInt(1));
+                    int idGerado = rs.getInt(1); // Pega o primeiro (e geralmente único) ID gerado
+                    material.setId(idGerado);
                     System.out.println("Material inserido com sucesso! ID: " + material.getId());
                 }
             }

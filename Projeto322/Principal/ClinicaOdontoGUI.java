@@ -524,6 +524,7 @@ private void atualizarTabelaProcedimentos() {
     
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);
+        materiais = materiaisDAO.buscarTodos(); //AAAAAAAAAAAAAAAAHHHHHH
         for (Materiais m : materiais) {
             materiaisTableModel.addRow(new Object[]{m.getNome(), m.getValor(), "⋮"});
         }
