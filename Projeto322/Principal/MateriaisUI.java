@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
-
+// interface dos materiais permitindo adicionar e remover materiais da tabela
 public class MateriaisUI extends JFrame {
    private List<Materiais> materiais;
    private DefaultTableModel tabelaModel;
@@ -20,19 +20,19 @@ public class MateriaisUI extends JFrame {
        setDefaultCloseOperation(EXIT_ON_CLOSE);
        setLocationRelativeTo(null);
 
-       // Adiciona coluna extra "Remover"
+    
         tabelaModel = new DefaultTableModel(new Object[]{"Nome", "Valor (R$)", ""}, 0) {
            @Override
            public boolean isCellEditable(int row, int column) {
-               return column == 2; // só o botão da coluna 2 é editável (para clicar)
+               return column == 2; 
            }
        };
 
        tabelaMateriais = new JTable(tabelaModel);
 
-       // Define renderizador do botão
+      
        tabelaMateriais.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
-       // Define editor do botão (para tratar clique)
+
        tabelaMateriais.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
 
        JScrollPane scroll = new JScrollPane(tabelaMateriais);
@@ -69,13 +69,13 @@ public class MateriaisUI extends JFrame {
    }
 
    private void atualizarTabela() {
-       tabelaModel.setRowCount(0); // limpa a tabela
+       tabelaModel.setRowCount(0);
        for (Materiais m : materiais) {
            tabelaModel.addRow(new Object[]{m.getNome(), String.format("%.2f", m.getValor()), "➖"});
        }
    }
 
-   // Renderiza o botão "menos"
+ 
    private class ButtonRenderer extends JButton implements TableCellRenderer {
        public ButtonRenderer() {
            setOpaque(true);
@@ -89,7 +89,6 @@ public class MateriaisUI extends JFrame {
        }
    }
 
-   // Trata o clique no botão
    private class ButtonEditor extends DefaultCellEditor {
        private JButton button;
        private String label;
@@ -117,7 +116,7 @@ public class MateriaisUI extends JFrame {
        @Override
        public Object getCellEditorValue() {
            if (clicked) {
-               // Confirma remoção
+               
                int resposta = JOptionPane.showConfirmDialog(button, "Remover este material?", "Confirmação",
                        JOptionPane.YES_NO_OPTION);
                if (resposta == JOptionPane.YES_OPTION) {

@@ -2,7 +2,7 @@ package Principal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+// conecta a interface com o banco de dados
 public class ConexaoBD {
     private static final String URL = "jdbc:sqlite:consultorio_odontologico.db"; // Nome do seu arquivo de banco de dados
 

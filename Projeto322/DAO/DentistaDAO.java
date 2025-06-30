@@ -1,6 +1,6 @@
 package DAO;
-import Principal.Dentista;
 import Principal.ConexaoBD;
+import Principal.Dentista;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,15 +9,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-// Importe sua classe Dentista aqui (assumindo que você a tenha)
-// Exemplo: import seu_pacote.Dentista;
 
 public class DentistaDAO {
 
     //insere dentista no BD
     public void inserir(Dentista dentista) {
-        // Adiciona RETURN_GENERATED_KEYS para informar ao PreparedStatement
-        // que queremos recuperar as chaves geradas automaticamente (o ID)
+        
         String sql = "INSERT INTO dentistas (nome, cpf, telefone, cro) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -27,11 +24,10 @@ public class DentistaDAO {
             stmt.setString(4, dentista.getCro());
             stmt.executeUpdate(); // Executa a inserção
 
-            // Agora, vamos recuperar o ID gerado pelo banco de dados
             try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) { // Se houver um ID gerado (deve haver para AUTOINCREMENT)
-                    int idGerado = rs.getInt(1); // Pega o primeiro (e geralmente único) ID gerado
-                    dentista.setId(idGerado); // Define o ID gerado no objeto Dentista
+                if (rs.next()) { 
+                    int idGerado = rs.getInt(1); 
+                    dentista.setId(idGerado); 
                     System.out.println("Dentista inserido com sucesso! ID gerado: " + idGerado);
                 }
             }
@@ -64,16 +60,11 @@ public class DentistaDAO {
         }
         return dentistas;
     }
-
-    // Recebe um dentista com apenas os atributos que desejamos modificar preenchido, com o mesmo Id do dentista original
     public void atualizar(Dentista dentista) {
-        // StringBuilder para construir a query dinamicamente
+     
         StringBuilder sqlBuilder = new StringBuilder("UPDATE dentistas SET ");
         
-        // Lista para armazenar os valores dos parâmetros dinamicamente
         List<Object> params = new ArrayList<>();
-
-        // Verifica cada campo do objeto. Se não for nulo, adiciona à query e à lista de parâmetros.
         if (dentista.getNome() != null && !dentista.getNome().isEmpty()) {
             sqlBuilder.append("nome = ?, ");
             params.add(dentista.getNome());
@@ -91,26 +82,20 @@ public class DentistaDAO {
             params.add(dentista.getCro());
         }
 
-        // Se nenhum campo foi adicionado para atualização, não faz nada.
         if (params.isEmpty()) {
             System.out.println("Nenhum campo fornecido para atualização.");
             return;
         }
 
-        // Remove a última vírgula e o espaço ", " da query
         sqlBuilder.setLength(sqlBuilder.length() - 2);
 
-        // Adiciona a cláusula WHERE para garantir que apenas o dentista certo seja atualizado
         sqlBuilder.append(" WHERE id = ?");
         params.add(dentista.getId());
 
-        // Executa a query
         try (Connection conn = ConexaoBD.conectar();
             PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
-            
-            // Define os parâmetros na PreparedStatement a partir da lista
+      
             for (int i = 0; i < params.size(); i++) {
-                // i + 1 porque os índices de PreparedStatement começam em 1
                 stmt.setObject(i + 1, params.get(i));
             }
 

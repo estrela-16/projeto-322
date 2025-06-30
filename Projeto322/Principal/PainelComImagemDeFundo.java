@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-
+/* arquivo para carregar imagem*/
 public class PainelComImagemDeFundo extends JPanel {
 
     private Image imagemDeFundo;

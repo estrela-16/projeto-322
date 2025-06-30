@@ -1,6 +1,6 @@
 package Principal;
 import java.util.List;
-
+// calcula o lucro ou defict com base no valor dos procediemtnos e uma taxa de comissao para os funcionarios
 public class Financeiro {
 
     double percentualComissao; /*porecentagem ganha pelos dentistas por consulta */
@@ -13,7 +13,7 @@ public class Financeiro {
         this.percentualComissao = percentual;
     }
 
-    public double calcularGanhos(int mes, int ano){ /*adicionar como parametros mes e ano para localizacao na agenda? */
+    public double calcularGanhos(int mes, int ano){ 
         List<Atendimento> atendimentos= agenda.getAtendimentos(mes, ano); 
         double ganhos=0;
 
@@ -48,7 +48,7 @@ public class Financeiro {
         return calcularGanhos(mes, ano)-calcularGastos(mes, ano);
     }
 
-    public String gerarRelatorioMensal(int ano){
+    public String gerarRelatorioMensal(int ano){ /* interface do financeiro */
         StringBuilder relatorio = new StringBuilder();
 
         relatorio.append(String.format("--- Relatório Financeiro Anual para %d ---%n%n", ano));

@@ -2,7 +2,6 @@ package DAO;
 
 import Principal.ConexaoBD;
 import Principal.Materiais;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,18 +32,17 @@ public class MateriaisDAO {
             stmt.setDouble(2, material.getValor());
             stmt.executeUpdate();
 
-            // Recupera o ID gerado pelo banco e o define no objeto
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    int idGerado = rs.getInt(1); // Pega o primeiro (e geralmente único) ID gerado
+                    int idGerado = rs.getInt(1); 
                     material.setId(idGerado);
                     System.out.println("Material inserido com sucesso! ID: " + material.getId());
                 }
             }
 
         } catch (SQLException e) {
-            // Trata o erro de violação de chave única (nome duplicado)
-            if (e.getErrorCode() == 19) { // Código de erro do SQLite para 'UNIQUE constraint failed'
+      
+            if (e.getErrorCode() == 19) { 
                 System.err.println("Erro ao inserir material: O nome '" + material.getNome() + "' já existe.");
             } else {
                 System.err.println("Erro ao inserir material: " + e.getMessage());
@@ -54,8 +52,7 @@ public class MateriaisDAO {
 
     /**
      * Busca todos os materiais cadastrados no banco de dados.
-     *
-     * return Uma lista de objetos Materiais.
+
      */
     public List<Materiais> buscarTodos() {
         List<Materiais> materiais = new ArrayList<>();
@@ -80,45 +77,36 @@ public class MateriaisDAO {
     }
     
     /**
-     * Atualiza os dados de um material de forma dinâmica.
-     * Apenas os campos não nulos (ou > 0 para valor) no objeto de entrada serão atualizados.
-     *
-     * param material O objeto Materiais contendo o ID e os campos a serem alterados.
+     * Atualiza os dados de um material 
      */
     public void atualizar(Materiais material) {
         StringBuilder sqlBuilder = new StringBuilder("UPDATE materiais SET ");
         List<Object> params = new ArrayList<>();
 
-        // Verifica se o nome foi fornecido para atualização
+        
         if (material.getNome() != null && !material.getNome().isEmpty()) {
             sqlBuilder.append("nome = ?, ");
             params.add(material.getNome());
         }
 
-        // Verifica se o valor foi fornecido para atualização.
-        // Assumimos que um valor 0 não é uma atualização intencional, mas o padrão.
         if (material.getValor() != 0) {
             sqlBuilder.append("valor = ?, ");
             params.add(material.getValor());
         }
         
-        // Se a lista de parâmetros está vazia, nenhum campo foi alterado.
         if (params.isEmpty()) {
             System.out.println("Nenhum campo fornecido para atualização.");
             return;
         }
 
-        // Remove a última vírgula e espaço ", "
         sqlBuilder.setLength(sqlBuilder.length() - 2);
 
-        // Adiciona a cláusula WHERE para atualizar o material correto
         sqlBuilder.append(" WHERE id = ?");
         params.add(material.getId());
 
         try (Connection conn = ConexaoBD.conectar();
              PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
 
-            // Define os parâmetros na PreparedStatement
             for (int i = 0; i < params.size(); i++) {
                 stmt.setObject(i + 1, params.get(i));
             }
@@ -138,8 +126,7 @@ public class MateriaisDAO {
 
     /**
      * Deleta um material do banco de dados com base no seu ID.
-     *
-     * param id O ID do material a ser deletado.
+   
      */
     public void deletar(int id) {
         String sql = "DELETE FROM materiais WHERE id = ?";

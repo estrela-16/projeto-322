@@ -1,5 +1,5 @@
 package Principal;
-
+/* pega os valores dos materiais comuns e os soma com as conta, depois divide pelo numero de atendimentos, achando a media */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class CalculodeGastos {
     }
 
     public void setNumeroDeConsultas(int num) {
-        this.numerodeconsultas = Math.max(1, num); // evita divisão por zero
+        this.numerodeconsultas = Math.max(1, num); 
     }
 
     public void setComissao(double comissao) {

@@ -10,7 +10,7 @@ public class Procedimento implements Id_Banco{
     private CalculodeGastos gastos;
     private double preco;
     private List<Double> valoresMateriais;
-
+ // informacoes do procediemtno
     public Procedimento(String nome, String especialidade, CalculodeGastos gastos) {
         this.id=0;
         this.nome = nome;
@@ -21,7 +21,7 @@ public class Procedimento implements Id_Banco{
         this.preco =calcularCustoTotal();
     }
 
-    // Construtor para recuperar do banco de dados
+    
     public Procedimento(int id, String nome, String especialidade) {
         this.id = id;
         this.nome = nome;
@@ -30,7 +30,6 @@ public class Procedimento implements Id_Banco{
         this.valoresMateriais = new ArrayList<>();
     }
 
-    // Construtor vazio para atualizações
     public Procedimento() {
         this.materiais = new ArrayList<>();
         this.valoresMateriais = new ArrayList<>();

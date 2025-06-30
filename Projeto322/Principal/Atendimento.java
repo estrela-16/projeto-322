@@ -1,6 +1,6 @@
 package Principal;
 import java.time.LocalDate;
-
+/* cria um atendimento com data, hora, paciente, dentista, procedimento, para ser usado na agenda */
 
 public class Atendimento implements Id_Banco{
    private int id;
@@ -31,7 +31,7 @@ public class Atendimento implements Id_Banco{
         this.statusP = statusP;
     }
 
-    // Construtor vazio para o DAO e para atualizações dinâmicas
+    // Construtor vazio para o DAO 
     public Atendimento() {
     }
 

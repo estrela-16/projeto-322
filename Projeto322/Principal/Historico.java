@@ -20,18 +20,13 @@ public class Historico implements Id_Banco{
         this.caminhosImagens = new ArrayList<>();
     }
 
-    /**
-     * Construtor para criar um novo histórico antes de salvar no banco de dados.
-     * pacienteId O ID do paciente.
-     * descricao A descrição textual do histórico.
-     */
     public Historico(int pacienteId, String descricao) {
         this.pacienteId = pacienteId;
         this.descricao = descricao;
         this.caminhosImagens = new ArrayList<>();
     }
 
-    // --- Getters e Setters ---
+
 
     @Override
     public int getId() {
@@ -67,12 +62,6 @@ public class Historico implements Id_Banco{
         this.caminhosImagens = caminhosImagens;
     }
 
-    // --- Métodos de ajuda ---
-
-    /**
-     * Adiciona o caminho de uma nova imagem à lista de imagens do histórico.
-     * caminho O caminho do arquivo de imagem.
-     */
     public void adicionarImagem(String caminho) {
         if (this.caminhosImagens == null) {
             this.caminhosImagens = new ArrayList<>();

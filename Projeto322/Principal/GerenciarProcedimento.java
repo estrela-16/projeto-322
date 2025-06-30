@@ -1,7 +1,7 @@
 package Principal;
 import java.util.ArrayList;
 import java.util.List;
-
+// cria a lista dos procedimentos que serao executados
 public class GerenciarProcedimento {
     private List<Procedimento> procedimentos;
 

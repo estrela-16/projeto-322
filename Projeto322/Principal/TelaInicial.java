@@ -1,7 +1,7 @@
 package Principal;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.*;// interfaceda tela inicial
 
 public class TelaInicial extends JFrame {
 
@@ -29,8 +29,8 @@ public class TelaInicial extends JFrame {
         titulo.setBackground(azulCaixas);
         titulo.setOpaque(true);
         titulo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.WHITE, 1),      // Borda externa visível
-            BorderFactory.createEmptyBorder(10, 25, 10, 25) // Borda interna para padding
+            BorderFactory.createLineBorder(Color.WHITE, 1),      
+            BorderFactory.createEmptyBorder(10, 25, 10, 25) 
         ));
 
         // Logotipo
@@ -43,12 +43,10 @@ public class TelaInicial extends JFrame {
             System.out.println("Arquivo 'logo.png' não encontrado. O logo não será exibido.");
         }
 
-        // Botões de navegação
         JButton acessarButton = new JButton("Acessar Sistema");
         JButton sobreButton = new JButton("Sobre");
         JButton sairButton = new JButton("Sair");
         
-        // Aplicação de estilo comum a todos os botões
         JButton[] botoes = {acessarButton, sobreButton, sairButton};
         Font fonteBotao = new Font("SansSerif", Font.BOLD, 14);
 
@@ -93,21 +91,16 @@ public class TelaInicial extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Ponto de entrada da aplicação.
-     * Configura o Look and Feel moderno (FlatLaf) antes de criar a janela.
-     */
+  
     public static void main(String[] args) {
-        // --- ATIVAÇÃO DO LOOK AND FEEL MODERNO ---
+      
         try {
-            // Define o tema FlatLaf Light. Esta linha transforma a aparência de toda a aplicação.
+           
             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
         } catch (Exception ex) {
             System.err.println("Falha ao inicializar o tema Look and Feel.");
         }
-        // --- FIM DA ATIVAÇÃO ---
-
-        // Garante que a criação da interface gráfica ocorra na thread correta (Event Dispatch Thread)
+        
         SwingUtilities.invokeLater(TelaInicial::new);
     }
 }

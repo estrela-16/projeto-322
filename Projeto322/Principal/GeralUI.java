@@ -2,13 +2,13 @@
 
 package Principal;
 
+import DAO.ContasDAO;
+import DAO.MateriaisComunsDAO;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
-import DAO.ContasDAO;
-import DAO.MateriaisComunsDAO;
-
+// interface dos gastos gerais, com duas tabelas, contas e mteriais comuns, e valore inseridos para calculo
 public class GeralUI extends JPanel {
     private List<Contas> contas;
     private List<MateriaisComuns> materiaisComuns;
@@ -95,7 +95,7 @@ public class GeralUI extends JPanel {
         JTable contasTable = new JTable(contasModel);
         TableColumn colRemover = contasTable.getColumnModel().getColumn(2);
         colRemover.setCellRenderer(new ButtonRenderer());
-        // CORREÇÃO: Passando o contasDAO para o construtor do ButtonEditor
+     
         colRemover.setCellEditor(new ButtonEditor(new JCheckBox(), contas, contasModel, contasDAO));
         colRemover.setMaxWidth(40);
         JScrollPane scrollContas = new JScrollPane(contasTable);
@@ -150,7 +150,7 @@ public class GeralUI extends JPanel {
         JTable materiaisTable = new JTable(materiaisModel);
         TableColumn colRemover = materiaisTable.getColumnModel().getColumn(3);
         colRemover.setCellRenderer(new ButtonRenderer());
-        // CORREÇÃO: Passando o materiaisComunsDAO para o construtor do ButtonEditorMateriais
+   
         colRemover.setCellEditor(new ButtonEditorMateriais(new JCheckBox(), materiaisComuns, materiaisModel, materiaisComunsDAO));
         colRemover.setMaxWidth(40);
         materiaisPanel.add(new JScrollPane(materiaisTable), BorderLayout.CENTER);
@@ -223,16 +223,15 @@ public class GeralUI extends JPanel {
         }
     }
 
-    // CORREÇÃO: Construtor e lógica de deleção do ButtonEditor
     private static class ButtonEditor extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
         private int row;
         private List<Contas> contas;
         private DefaultTableModel model;
-        private ContasDAO contasDAO; // Adicionado
+        private ContasDAO contasDAO; 
 
-        // CORREÇÃO: O construtor agora aceita o ContasDAO
+  
         public ButtonEditor(JCheckBox checkBox, List<Contas> contas, DefaultTableModel model, ContasDAO contasDAO) {
             super(checkBox);
             this.contas = contas;
@@ -271,21 +270,20 @@ public class GeralUI extends JPanel {
         }
     }
 
-    // CORREÇÃO: Construtor e lógica de deleção do ButtonEditorMateriais
     private static class ButtonEditorMateriais extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
         private int row;
         private List<MateriaisComuns> materiais;
         private DefaultTableModel model;
-        private MateriaisComunsDAO materiaisComunsDAO; // Adicionado
+        private MateriaisComunsDAO materiaisComunsDAO; 
 
-        // CORREÇÃO: O construtor agora aceita o MateriaisComunsDAO
+       
         public ButtonEditorMateriais(JCheckBox checkBox, List<MateriaisComuns> materiais, DefaultTableModel model, MateriaisComunsDAO materiaisComunsDAO) {
             super(checkBox);
             this.materiais = materiais;
             this.model = model;
-            this.materiaisComunsDAO = materiaisComunsDAO; // Armazena o DAO
+            this.materiaisComunsDAO = materiaisComunsDAO; 
             button = new JButton("\u22ee");
             button.setFont(new Font("SansSerif", Font.PLAIN, 14));
             button.setOpaque(true);

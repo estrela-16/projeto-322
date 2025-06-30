@@ -2,7 +2,6 @@ package DAO;
 
 import Principal.ConexaoBD;
 import Principal.Paciente;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,7 +32,6 @@ public class PacienteDAO {
             stmt.setString(3, paciente.getTelefone());
             stmt.executeUpdate();
 
-            // Recupera o ID gerado pelo banco e o define no objeto Paciente
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     paciente.setId(rs.getInt(1));
@@ -42,7 +40,7 @@ public class PacienteDAO {
             }
 
         } catch (SQLException e) {
-            if (e.getErrorCode() == 19) { // Código de erro do SQLite para 'UNIQUE constraint failed' (para CPF)
+            if (e.getErrorCode() == 19) {
                 System.err.println("Erro ao inserir paciente: O CPF '" + paciente.getCpf() + "' já está cadastrado.");
             } else {
                 System.err.println("Erro ao inserir paciente: " + e.getMessage());
@@ -106,7 +104,7 @@ public class PacienteDAO {
             return;
         }
 
-        sqlBuilder.setLength(sqlBuilder.length() - 2); // Remove a última vírgula
+        sqlBuilder.setLength(sqlBuilder.length() - 2); 
         sqlBuilder.append(" WHERE id = ?");
         params.add(paciente.getId());
 
@@ -135,7 +133,7 @@ public class PacienteDAO {
      * @param id O ID do paciente a ser deletado.
      */
     public void deletar(int id) {
-        // Futuramente, você pode adicionar uma lógica para deletar o histórico associado também.
+     
         String sql = "DELETE FROM pacientes WHERE id = ?";
         
         try (Connection conn = ConexaoBD.conectar();

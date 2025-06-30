@@ -1,5 +1,6 @@
 package Principal;
-
+/* interface do calendario e alteraçao  e criacao de atendimentos*/
+import DAO.AtendimentoDAO;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.swing.*;
-import DAO.AtendimentoDAO;
 
 public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
     private Agenda agenda;
@@ -64,7 +64,7 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
 
         add(painelInferior, BorderLayout.SOUTH);
 
-        // Navegação dos meses
+        // passar meses
         botaoAnterior.addActionListener(e -> {
             mesAnoAtual = mesAnoAtual.minusMonths(1);
             atualizarCalendario();
@@ -94,12 +94,12 @@ public class AgendaUI extends JPanel { // ALTERADO de JFrame para JPanel
             .collect(Collectors.toList());
 
             if (atendimentosDoDia.isEmpty()) {
-                // MODIFICADO: Cor de fundo para azul claro para dias sem atendimentos
+                // muda a cor do atendimento dependendo do seu status
                 botaoDia.setBackground(new Color(173, 216, 230)); 
             } else if (atendimentosDoDia.stream().allMatch(a -> a.getStatusP() == StatusPagamento.PAGO)) {
-                botaoDia.setBackground(Color.GREEN); // todos pagos
+                botaoDia.setBackground(Color.GREEN); 
             } else if (atendimentosDoDia.stream().anyMatch(a -> a.getStatusP() == StatusPagamento.NAO_PAGO)) {
-                botaoDia.setBackground(Color.RED); // pelo menos um não pago
+                botaoDia.setBackground(Color.RED); 
             }
 
             botaoDia.addActionListener(e -> mostrarAtendimentosDoDia(dataBotao));

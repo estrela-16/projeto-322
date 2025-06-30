@@ -48,7 +48,7 @@ public class AtendimentoDAO {
      */
     public List<Atendimento> buscarTodos() {
         List<Atendimento> atendimentos = new ArrayList<>();
-        // Query com JOIN para buscar todos os dados necessários de uma vez
+       
         String sql = "SELECT " +
                  "a.id as atendimento_id, a.data, a.horario, a.status_pagamento, " +
                  "p.id as paciente_id, p.nome as paciente_nome, p.cpf as paciente_cpf, p.telefone as paciente_telefone, " +
@@ -64,7 +64,7 @@ public class AtendimentoDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Criar e preencher o objeto Dentista
+           
                 Dentista dentista = new Dentista(
                     rs.getInt("dentista_id"),
                     rs.getString("dentista_nome"),
@@ -73,7 +73,7 @@ public class AtendimentoDAO {
                     rs.getString("cro")
                 );
 
-                // Criar e preencher o objeto Paciente
+                
                 Paciente paciente = new Paciente(
                     rs.getInt("paciente_id"),
                     rs.getString("paciente_nome"),
@@ -81,14 +81,14 @@ public class AtendimentoDAO {
                     rs.getString("paciente_telefone")
                 );
 
-                // Criar e preencher o objeto Procedimento
+                
                 Procedimento procedimento = new Procedimento(
                     rs.getInt("procedimento_id"),
                     rs.getString("procedimento_nome"),
                     rs.getString("especialidade")
                 );
 
-                // Criar e preencher o objeto Atendimento
+                
                 Atendimento atendimento = new Atendimento();
                 atendimento.setId(rs.getInt("atendimento_id"));
                 atendimento.setData(LocalDate.parse(rs.getString("data"), DATE_FORMATTER));
@@ -106,10 +106,6 @@ public class AtendimentoDAO {
         return atendimentos;
     }
 
-    /**
-     * Atualiza um atendimento de forma dinâmica. Apenas os campos não nulos no objeto de entrada serão atualizados.
-     * @param atendimento O objeto Atendimento com o ID e os dados a serem modificados.
-     */
     public void atualizar(Atendimento atendimento) {
         StringBuilder sqlBuilder = new StringBuilder("UPDATE atendimentos SET ");
         List<Object> params = new ArrayList<>();

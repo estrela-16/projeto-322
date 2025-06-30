@@ -1,5 +1,5 @@
 package Principal;
-public enum StatusPagamento {
+public enum StatusPagamento { // indica o status da consulta
     
     PAGO("Verde"),
     NAO_PAGO("Vermelha");

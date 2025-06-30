@@ -44,10 +44,10 @@ public class CriadorTabelas {
          String sqlProcedimentos = "CREATE TABLE IF NOT EXISTS procedimentos (" +
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                                   "nome TEXT NOT NULL UNIQUE," +
-                                  "especialidade TEXT NOT NULL" + // Preço foi removido daqui
+                                  "especialidade TEXT NOT NULL" + 
                                   ");";
 
-        // NOVA TABELA: Para ligar procedimentos e materiais (relação Muitos-para-Muitos)
+        // ligar procedimentos e materiais
         String sqlProcedimentoMateriais = "CREATE TABLE IF NOT EXISTS procedimento_materiais (" +
                                           "procedimento_id INTEGER NOT NULL," +
                                           "material_id INTEGER NOT NULL," +
@@ -81,7 +81,7 @@ public class CriadorTabelas {
                                     "quantidade INTEGER NOT NULL" +
                                     ");";
         
-        // Tabela para guardar configurações. Usaremos um ID fixo (1) para sempre atualizar a mesma linha.
+    
         String sqlGastosConfig = "CREATE TABLE IF NOT EXISTS gastos_config (" +
                                  "id INTEGER PRIMARY KEY," +
                                  "consultas_mes INTEGER," +

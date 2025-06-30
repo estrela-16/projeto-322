@@ -10,7 +10,7 @@ public class Contas implements Id_Banco{
         this.valor = valor;
     }
 
-    // Construtor para buscar do BD (com id)
+    // Construtor para buscar do Banco de dados (com id)
     public Contas (int id, String nome, double valor){
         this.id = id;
         this.nome = nome;

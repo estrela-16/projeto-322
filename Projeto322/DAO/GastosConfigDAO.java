@@ -2,7 +2,6 @@ package DAO;
 
 import Principal.CalculodeGastos;
 import Principal.ConexaoBD;
-
 import java.sql.*;
 
 /**
@@ -16,8 +15,7 @@ public class GastosConfigDAO {
 
     /**
      * Salva ou atualiza as configurações de gastos no banco de dados.
-     * Tenta primeiro atualizar a linha com ID=1. Se não existir, insere uma nova.
-     *
+    
      * @param config O objeto CalculodeGastos contendo os valores a serem salvos.
      */
     public void salvarOuAtualizar(CalculodeGastos config) {
@@ -25,20 +23,19 @@ public class GastosConfigDAO {
         String sqlInsert = "INSERT INTO gastos_config (id, consultas_mes, comissao, taxa_servico) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexaoBD.conectar()) {
-            // Tenta atualizar primeiro
+           
             try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
-                stmtUpdate.setInt(1, 1); // Assumindo que o número de consultas é um inteiro. Se não for, ajuste.
+                stmtUpdate.setInt(1, 1); 
                 stmtUpdate.setDouble(2, config.getComissao());
                 stmtUpdate.setDouble(3, config.getTaxaServico());
                 stmtUpdate.setInt(4, CONFIG_ID);
                 
                 int affectedRows = stmtUpdate.executeUpdate();
 
-                // Se nenhuma linha foi atualizada, significa que ela não existe. Então, insira.
                 if (affectedRows == 0) {
                     try (PreparedStatement stmtInsert = conn.prepareStatement(sqlInsert)) {
                         stmtInsert.setInt(1, CONFIG_ID);
-                        stmtInsert.setInt(2, 1); // Valor padrão inicial
+                        stmtInsert.setInt(2, 1);
                         stmtInsert.setDouble(3, config.getComissao());
                         stmtInsert.setDouble(4, config.getTaxaServico());
                         stmtInsert.executeUpdate();
@@ -68,7 +65,7 @@ public class GastosConfigDAO {
             stmt.setInt(1, CONFIG_ID);
             ResultSet rs = stmt.executeQuery();
 
-            // Se encontrou a linha de configuração, preenche o objeto
+           
             if (rs.next()) {
                 config.setNumeroDeConsultas(rs.getInt("consultas_mes"));
                 config.setComissao(rs.getDouble("comissao"));

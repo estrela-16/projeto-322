@@ -1,23 +1,21 @@
 package Principal;
-
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors; // Import necessário para o `joining`
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
+/* painel principal que junta todas as interfaces */
 import DAO.AtendimentoDAO;
+import DAO.ContasDAO;
 import DAO.DentistaDAO;
+import DAO.MateriaisComunsDAO;
 import DAO.MateriaisDAO;
 import DAO.PacienteDAO;
 import DAO.ProcedimentoDAO;
-import DAO.ContasDAO; // Adicione o import
-import DAO.MateriaisComunsDAO; // Adicione o import
+import java.awt.*;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors; 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn; 
 
 public class ClinicaOdontoGUI extends JFrame {
 
@@ -68,7 +66,7 @@ public class ClinicaOdontoGUI extends JFrame {
         setSize(900, 700);
         setLocationRelativeTo(null);
 
-        //--- 1. INICIALIZAÇÃO DOS DAOs ---
+        // INICIALIZAÇÃO DOS DAOs 
         this.pacienteDAO = new PacienteDAO();
         this.dentistaDAO = new DentistaDAO();
         this.materiaisDAO = new MateriaisDAO();
@@ -77,14 +75,14 @@ public class ClinicaOdontoGUI extends JFrame {
         this.contasDAO = new ContasDAO();
         this.materiaisComunsDAO = new MateriaisComunsDAO();
 
-        //--- 2. CARREGAMENTO DOS DADOS DO BANCO ---
+        //CARREGAMENTO DOS DADOS DO BANCO 
         pacientes = pacienteDAO.buscarTodos();
         dentistas = dentistaDAO.buscarTodos();
         materiais = materiaisDAO.buscarTodos();
         contas = contasDAO.buscarTodos();
         materiaiscomuns = materiaisComunsDAO.buscarTodos();
 
-        //--- 3. INICIALIZAÇÃO DOS OBJETOS DE NEGÓCIO ---
+        // INICIALIZAÇÃO DOS OBJETOs
         agenda = new Agenda();
         agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
         
@@ -97,13 +95,12 @@ public class ClinicaOdontoGUI extends JFrame {
         gastos.setConta(contas);
         gastos.setMateriaisComunses(materiaiscomuns);
 
-        //--- 4. VINCULAÇÃO DO OBJETO 'GASTOS' ---
         // Vincula o 'gastos' aos procedimentos da lista principal
         for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
             p.setGastos(this.gastos);
         }
         
-        // **CORREÇÃO ADICIONADA AQUI**
+    
         // Garante que os procedimentos DENTRO dos atendimentos também tenham o 'gastos' vinculado.
         for (Atendimento a : agenda.getTodos()) {
             if (a.getProcedimentos() != null) {
@@ -111,7 +108,7 @@ public class ClinicaOdontoGUI extends JFrame {
             }
         }
 
-        //--- 5. CRIAÇÃO DA INTERFACE GRÁFICA ---
+        //INTERFACE GRÁFICA 
         tabbedPane = new JTabbedPane();
         createMenuBar();
         createTabs();
@@ -321,11 +318,11 @@ private void atualizarTabelaProcedimentos() {
     }
 
     private JPanel createPacientesPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10)); // Adicionado espaçamento
+        JPanel panel = new JPanel(new BorderLayout(10, 10)); 
 
         String[] colunas = {"Nome", "Telefone", "CPF"};
         pacientesTableModel = new DefaultTableModel(colunas, 0) {
-            // Impede a edição direta na tabela
+            
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -334,15 +331,14 @@ private void atualizarTabelaProcedimentos() {
         pacientesTable = new JTable(pacientesTableModel);
         JScrollPane scrollPane = new JScrollPane(pacientesTable);
 
-        // PAINEL DE BOTÕES (NOVO)
+        
         JPanel botoesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton verHistoricoButton = new JButton("Ver/Editar Histórico");
-        // Você pode adicionar outros botões aqui, como "Editar Paciente" ou "Remover"
         botoesPanel.add(verHistoricoButton);
         
         // Adiciona os componentes ao painel principal
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(botoesPanel, BorderLayout.NORTH); // Botões acima da tabela
+        panel.add(botoesPanel, BorderLayout.NORTH); 
 
         // Ação do botão para ver o histórico
         verHistoricoButton.addActionListener(e -> {
@@ -569,7 +565,7 @@ private void atualizarTabelaProcedimentos() {
     
     private void atualizarTabelaMateriais() {
         materiaisTableModel.setRowCount(0);
-        materiais = materiaisDAO.buscarTodos(); //AAAAAAAAAAAAAAAAHHHHHH
+        materiais = materiaisDAO.buscarTodos(); 
         for (Materiais m : materiais) {
             materiaisTableModel.addRow(new Object[]{m.getNome(), m.getValor(), "⋮"});
         }

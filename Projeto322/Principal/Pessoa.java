@@ -1,6 +1,6 @@
 package Principal;
 public  abstract  class Pessoa {
-  
+  // informacoes das pessoas
     private String nome;
     private String cpf;
     private String telefone;
@@ -12,7 +12,7 @@ public  abstract  class Pessoa {
     }
 
     public Pessoa() {
-        //TODO Auto-generated constructor stub
+        
     }
 
     public String getNome() {

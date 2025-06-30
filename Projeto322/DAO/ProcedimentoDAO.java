@@ -20,9 +20,8 @@ public class ProcedimentoDAO {
 
         try {
             conn = ConexaoBD.conectar();
-            conn.setAutoCommit(false); // Inicia a transação
+            conn.setAutoCommit(false); 
 
-            // 1. Insere o procedimento principal
             try (PreparedStatement stmt = conn.prepareStatement(sqlProcedimento, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, procedimento.getNome());
                 stmt.setString(2, procedimento.getEspecialidade());
@@ -35,17 +34,17 @@ public class ProcedimentoDAO {
                 }
             }
 
-            // 2. Insere os materiais na tabela de junção
+   
             try (PreparedStatement stmt = conn.prepareStatement(sqlMateriais)) {
                 for (Materiais material : procedimento.getMateriais()) {
                     stmt.setInt(1, procedimento.getId());
                     stmt.setInt(2, material.getId());
-                    stmt.addBatch(); // Adiciona a operação ao lote
+                    stmt.addBatch(); 
                 }
-                stmt.executeBatch(); // Executa todas as inserções de uma vez
+                stmt.executeBatch();
             }
 
-            conn.commit(); // Confirma a transação
+            conn.commit(); 
             System.out.println("Procedimento inserido com sucesso! ID: " + procedimento.getId());
             return true;
 
@@ -53,7 +52,7 @@ public class ProcedimentoDAO {
             System.err.println("Erro ao inserir procedimento: " + e.getMessage());
             if (conn != null) {
                 try {
-                    conn.rollback(); // Desfaz a transação em caso de erro
+                    conn.rollback(); 
                 } catch (SQLException ex) {
                     System.err.println("Erro ao reverter transação: " + ex.getMessage());
                 }
@@ -87,10 +86,9 @@ public class ProcedimentoDAO {
                 String nome = rs.getString("nome");
                 String especialidade = rs.getString("especialidade");
                 
-                // Construtor foi ajustado para não precisar do preço
+             
                 Procedimento procedimento = new Procedimento(id, nome, especialidade);
-                
-                // Carrega os materiais para este procedimento
+        
                 procedimento.setMateriais(buscarMateriaisPorProcedimentoId(id));
                 
                 procedimentos.add(procedimento);
@@ -106,7 +104,7 @@ public class ProcedimentoDAO {
      */
     private List<Materiais> buscarMateriaisPorProcedimentoId(int procedimentoId) {
         List<Materiais> materiais = new ArrayList<>();
-        // Query que junta as tabelas para encontrar os materiais
+
         String sql = "SELECT m.id, m.nome, m.valor FROM materiais m " +
                      "JOIN procedimento_materiais pm ON m.id = pm.material_id " +
                      "WHERE pm.procedimento_id = ?";
@@ -130,25 +128,22 @@ public class ProcedimentoDAO {
         return materiais;
     }
     /**
-     * Atualiza os dados de um procedimento de forma dinâmica.
+     * Atualiza os dados de um procedimento
      */
     public void atualizar(Procedimento procedimento) {
-    // SQL para atualizar a tabela principal de procedimentos
+   
     String sqlUpdateProcedimento = "UPDATE procedimentos SET nome = ?, especialidade = ?, preco = ? WHERE id = ?";
-    
-    // SQL para apagar as associações de materiais antigas
+
     String sqlDeleteMateriais = "DELETE FROM procedimento_materiais WHERE procedimento_id = ?";
 
-    // SQL para inserir as novas associações de materiais
     String sqlInsertMateriais = "INSERT INTO procedimento_materiais (procedimento_id, material_id) VALUES (?, ?)";
 
     Connection conn = null;
     try {
         conn = ConexaoBD.conectar();
-        // Desativa o auto-commit para controlar a transação manualmente
+      
         conn.setAutoCommit(false);
 
-        // 1. Atualiza os dados na tabela 'procedimentos'
         try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateProcedimento)) {
             stmt.setString(1, procedimento.getNome());
             stmt.setString(2, procedimento.getEspecialidade());
@@ -157,29 +152,28 @@ public class ProcedimentoDAO {
             stmt.executeUpdate();
         }
 
-        // 2. Deleta as associações de materiais antigas
         try (PreparedStatement stmt = conn.prepareStatement(sqlDeleteMateriais)) {
             stmt.setInt(1, procedimento.getId());
             stmt.executeUpdate();
         }
 
-        // 3. Insere as novas associações de materiais
+        
         try (PreparedStatement stmt = conn.prepareStatement(sqlInsertMateriais)) {
             for (Materiais material : procedimento.getMateriais()) {
                 stmt.setInt(1, procedimento.getId());
                 stmt.setInt(2, material.getId());
-                stmt.addBatch(); // Adiciona a operação em lote
+                stmt.addBatch(); 
             }
-            stmt.executeBatch(); // Executa o lote de inserções
+            stmt.executeBatch(); 
         }
 
-        // 4. Se tudo ocorreu sem erros, confirma a transação
+        
         conn.commit();
         System.out.println("Procedimento atualizado com sucesso!");
 
     } catch (SQLException e) {
         System.err.println("Erro ao atualizar procedimento, revertendo a transação: " + e.getMessage());
-        // 5. Em caso de qualquer erro, reverte todas as alterações feitas
+ 
         if (conn != null) {
             try {
                 conn.rollback();
@@ -188,7 +182,6 @@ public class ProcedimentoDAO {
             }
         }
     } finally {
-        // Garante que a conexão seja fechada e o auto-commit reativado
         if (conn != null) {
             try {
                 conn.setAutoCommit(true);

@@ -1,11 +1,6 @@
 package Principal;
 
 import DAO.HistoricoDAO;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -14,20 +9,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+// teste do historico, nao faz parte do codigo
 
-/**
- * Uma classe de interface gráfica para testar a funcionalidade de
- * adicionar e visualizar imagens de um histórico de paciente de forma isolada.
- */
 public class TesteAdicionarImagemGUI extends JFrame {
 
-    // --- Componentes da Interface ---
+  
     private JButton botaoAdicionarImagem;
     private JLabel labelVisualizador;
     private JList<String> listaCaminhos;
     private DefaultListModel<String> listModel;
 
-    // --- Lógica de Dados ---
+
     private HistoricoDAO historicoDAO;
     private int idDoHistoricoParaTeste = 1;
 
@@ -126,7 +120,7 @@ public class TesteAdicionarImagemGUI extends JFrame {
             int labelWidth = labelVisualizador.getWidth();
             int labelHeight = labelVisualizador.getHeight();
 
-            // Se o label ainda não tiver tamanho, não faz nada.
+           
             if (labelWidth <= 0 || labelHeight <= 0) {
                 return;
             }
@@ -134,25 +128,22 @@ public class TesteAdicionarImagemGUI extends JFrame {
             int imgWidth = imagemOriginal.getWidth(null);
             int imgHeight = imagemOriginal.getHeight(null);
 
-            // Calcula a proporção da imagem e do label
             double imgRatio = (double) imgWidth / (double) imgHeight;
             double labelRatio = (double) labelWidth / (double) labelHeight;
             
             int newWidth = imgWidth;
             int newHeight = imgHeight;
 
-            // Se a imagem é mais larga (proporcionalmente) que o label,
-            // a nova largura será a do label e a altura será calculada.
+          
             if (imgRatio > labelRatio) {
                 newWidth = labelWidth;
                 newHeight = (int) (newWidth / imgRatio);
-            } else { // Se a imagem é mais alta (proporcionalmente),
-                     // a nova altura será a do label e a largura será calculada.
+            } else { 
                 newHeight = labelHeight;
                 newWidth = (int) (newHeight * imgRatio);
             }
 
-            // Cria a imagem redimensionada com alta qualidade
+         
             Image imagemRedimensionada = imagemOriginal.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
             
             labelVisualizador.setIcon(new ImageIcon(imagemRedimensionada));

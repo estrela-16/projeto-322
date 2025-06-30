@@ -28,7 +28,7 @@ public class MateriaisComunsDAO {
             stmt.setInt(3, material.getQuantidade());
             stmt.executeUpdate();
 
-            // Recupera o ID gerado e o define no objeto
+            
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     material.setId(rs.getInt(1));
@@ -36,8 +36,8 @@ public class MateriaisComunsDAO {
                 }
             }
         } catch (SQLException e) {
-            // Trata o erro de violação de chave única (nome duplicado)
-            if (e.getErrorCode() == 19) { // Código de erro do SQLite para 'UNIQUE constraint failed'
+        
+            if (e.getErrorCode() == 19) { 
                 System.err.println("Erro ao inserir material comum: O nome '" + material.getNome() + "' já existe.");
             } else {
                 System.err.println("Erro ao inserir material comum: " + e.getMessage());

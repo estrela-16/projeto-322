@@ -1,4 +1,4 @@
-// Em DAO/ContasDAO.java
+
 
 package DAO;
 
@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContasDAO {
+public class ContasDAO { // banco de dados com a conta
 
     public void inserir(Contas conta) {
         String sql = "INSERT INTO contas (nome, valor) VALUES (?, ?)";
