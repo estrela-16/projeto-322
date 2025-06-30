@@ -234,6 +234,7 @@ public class ClinicaOdontoGUI extends JFrame {
         gbc.gridx = 1; gbc.gridy = ++y; gbc.anchor = GridBagConstraints.CENTER; gbc.fill = GridBagConstraints.NONE; cadastroPanel.add(adicionarProcedimentoButton, gbc);
 
         panel.add(cadastroPanel, BorderLayout.SOUTH);
+        atualizarTabelaProcedimentos();
         return panel;
     }
 
@@ -359,6 +360,7 @@ private void atualizarTabelaProcedimentos() {
         });
 
         panel.add(cadastroPanel, BorderLayout.SOUTH);
+        atualizarTabelaPacientes();
         return panel;
     }
 
@@ -442,6 +444,7 @@ private void atualizarTabelaProcedimentos() {
         });
 
         panel.add(cadastroPanel, BorderLayout.SOUTH);
+        atualizarTabelaDentistas();
         return panel;
     }
 
