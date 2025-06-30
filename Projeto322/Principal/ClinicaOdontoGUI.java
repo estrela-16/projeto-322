@@ -205,13 +205,20 @@ public class ClinicaOdontoGUI extends JFrame {
             for (Materiais materialSelecionado : materiaisSelecionados) {
                 novoProcedimento.adicionarMaterial(materialSelecionado);
             }
+            
+            boolean sucesso = procedimentoDAO.inserir(novoProcedimento);
 
-            procedimentoDAO.inserir(novoProcedimento);
-
-            gerenciarProcedimento.adicionarProcedimento(novoProcedimento);
-            atualizarTabelaProcedimentos();
-            materiaisJList.clearSelection();
-            JOptionPane.showMessageDialog(this, "Procedimento '" + nomeProcedimento + "' adicionado com sucesso!");
+            if (sucesso) {
+                gerenciarProcedimento.adicionarProcedimento(novoProcedimento);
+                atualizarTabelaProcedimentos();
+                materiaisJList.clearSelection();
+                JOptionPane.showMessageDialog(this, "Procedimento '" + nomeProcedimento + "' adicionado com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Não foi possível adicionar o procedimento.\n\nCausa provável: Já existe um procedimento com este nome.",
+                    "Erro de Duplicidade",
+                    JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         int y = 0;

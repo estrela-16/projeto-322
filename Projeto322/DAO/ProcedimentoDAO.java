@@ -13,7 +13,7 @@ public class ProcedimentoDAO {
      * Insere um novo procedimento e seus materiais associados.
      * A operação é feita em uma transação para garantir a consistência.
      */
-    public void inserir(Procedimento procedimento) {
+    public boolean inserir(Procedimento procedimento) {
         String sqlProcedimento = "INSERT INTO procedimentos (nome, especialidade) VALUES (?, ?)";
         String sqlMateriais = "INSERT INTO procedimento_materiais (procedimento_id, material_id) VALUES (?, ?)";
         Connection conn = null;
@@ -47,6 +47,7 @@ public class ProcedimentoDAO {
 
             conn.commit(); // Confirma a transação
             System.out.println("Procedimento inserido com sucesso! ID: " + procedimento.getId());
+            return true;
 
         } catch (SQLException e) {
             System.err.println("Erro ao inserir procedimento: " + e.getMessage());
@@ -57,6 +58,7 @@ public class ProcedimentoDAO {
                     System.err.println("Erro ao reverter transação: " + ex.getMessage());
                 }
             }
+            return false;
         } finally {
             if (conn != null) {
                 try {

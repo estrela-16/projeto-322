@@ -33,6 +33,7 @@ public class Procedimento implements Id_Banco{
     // Construtor vazio para atualizações
     public Procedimento() {
         this.materiais = new ArrayList<>();
+        this.valoresMateriais = new ArrayList<>();
     }
 
 
@@ -80,6 +81,10 @@ public class Procedimento implements Id_Banco{
 
     public void setMateriais(List<Materiais> materiais) {
         this.materiais = materiais;
+        this.valoresMateriais.clear();
+        for (Materiais m : this.materiais) {
+            this.valoresMateriais.add(m.getValor());
+        }
     }
 
     public double calcularGastos(){
@@ -91,8 +96,8 @@ public class Procedimento implements Id_Banco{
     }
 
     public void setGastos(CalculodeGastos gastos) {
-    this.gastos = gastos;
-}
+        this.gastos = gastos;
+    }
 
     public double calcularCustoTotal() {
         double taxa;
