@@ -68,6 +68,26 @@ public class CriadorTabelas {
                                  "FOREIGN KEY (paciente_id) REFERENCES pacientes(id)," +
                                  "FOREIGN KEY (procedimento_id) REFERENCES procedimentos(id)" +
                                  ");";
+        String sqlContas = "CREATE TABLE IF NOT EXISTS contas (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "nome TEXT NOT NULL UNIQUE," +
+                            "valor REAL NOT NULL" +
+                            ");";
+
+        String sqlMateriaisComuns = "CREATE TABLE IF NOT EXISTS materiais_comuns (" +
+                                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                    "nome TEXT NOT NULL UNIQUE," +
+                                    "valor REAL NOT NULL," +
+                                    "quantidade INTEGER NOT NULL" +
+                                    ");";
+        
+        // Tabela para guardar configurações. Usaremos um ID fixo (1) para sempre atualizar a mesma linha.
+        String sqlGastosConfig = "CREATE TABLE IF NOT EXISTS gastos_config (" +
+                                 "id INTEGER PRIMARY KEY," +
+                                 "consultas_mes INTEGER," +
+                                 "comissao REAL," +
+                                 "taxa_servico REAL" +
+                                 ");";
 
 
         try (Connection conn = ConexaoBD.conectar();
@@ -81,6 +101,9 @@ public class CriadorTabelas {
             stmt.execute(sqlProcedimentos);
             stmt.execute(sqlProcedimentoMateriais);
             stmt.execute(sqlAtendimentos);
+            stmt.execute(sqlContas);
+            stmt.execute(sqlMateriaisComuns);
+            stmt.execute(sqlGastosConfig);
 
             System.out.println("Tabelas criadas ou já existentes.");
 

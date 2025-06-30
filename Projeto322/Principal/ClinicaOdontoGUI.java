@@ -16,6 +16,8 @@ import DAO.DentistaDAO;
 import DAO.MateriaisDAO;
 import DAO.PacienteDAO;
 import DAO.ProcedimentoDAO;
+import DAO.ContasDAO; // Adicione o import
+import DAO.MateriaisComunsDAO; // Adicione o import
 
 public class ClinicaOdontoGUI extends JFrame {
 
@@ -56,6 +58,8 @@ public class ClinicaOdontoGUI extends JFrame {
     private MateriaisDAO materiaisDAO;
     private ProcedimentoDAO procedimentoDAO;
     private AtendimentoDAO atendimentoDAO;
+    private ContasDAO contasDAO;
+    private MateriaisComunsDAO materiaisComunsDAO;
 
     public ClinicaOdontoGUI() {
         super("Sistema de Gerenciamento Odontológico");
@@ -64,35 +68,42 @@ public class ClinicaOdontoGUI extends JFrame {
         setSize(900, 700);
         setLocationRelativeTo(null);
 
-        //Definindo base de dados
+        //--- INICIALIZAÇÃO DOS DAOS ---
         this.pacienteDAO = new PacienteDAO();
         this.dentistaDAO = new DentistaDAO();
         this.materiaisDAO = new MateriaisDAO();
         this.procedimentoDAO = new ProcedimentoDAO();
         this.atendimentoDAO = new AtendimentoDAO();
+        this.contasDAO = new ContasDAO();
+        this.materiaisComunsDAO = new MateriaisComunsDAO();
 
-       pacientes = pacienteDAO.buscarTodos(); // Em vez de new ArrayList<>();
-        dentistas = dentistaDAO.buscarTodos(); // Em vez de new ArrayList<>();
-        materiais = materiaisDAO.buscarTodos(); // Em vez de new ArrayList<>();
+        //--- CARREGAMENTO CORRETO DOS DADOS DO BANCO ---
+        pacientes = pacienteDAO.buscarTodos();
+        dentistas = dentistaDAO.buscarTodos();
+        materiais = materiaisDAO.buscarTodos();
+        contas = contasDAO.buscarTodos(); // Carrega os dados
+        materiaiscomuns = materiaisComunsDAO.buscarTodos(); // Carrega os dados
+
+        //--- INICIALIZAÇÃO DOS OBJETOS DE NEGÓCIO ---
         agenda = new Agenda();
         agenda.getTodos().addAll(atendimentoDAO.buscarTodos());
+        
         gerenciarProcedimento = new GerenciarProcedimento();
         gerenciarProcedimento.getProcedimentos().addAll(procedimentoDAO.buscarTodos());
+        
         financeiro = new Financeiro(agenda, 0);
-        gastos= new CalculodeGastos();
-        contas = new ArrayList<>();
-        materiaiscomuns = new ArrayList<>();
+        gastos = new CalculodeGastos();
 
         for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
             p.setGastos(this.gastos);
         }
 
+        //--- CRIAÇÃO DA INTERFACE GRÁFICA ---
         tabbedPane = new JTabbedPane();
         createMenuBar();
         createTabs();
 
         add(tabbedPane, BorderLayout.CENTER);
-
         setVisible(true);
     }
 
@@ -127,7 +138,7 @@ public class ClinicaOdontoGUI extends JFrame {
         materiaisPanel = createMateriaisPanel();
         tabbedPane.addTab("Materiais", materiaisPanel);
 
-        geralPanel = new GeralUI(contas, materiaiscomuns, this, gastos);
+        geralPanel = new GeralUI(contas, materiaiscomuns, this, gastos, contasDAO, materiaisComunsDAO);
         tabbedPane.addTab("Gastos Gerais", geralPanel);
 
         tabbedPane.addChangeListener(e -> {

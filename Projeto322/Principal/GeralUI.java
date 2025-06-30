@@ -1,10 +1,13 @@
+// Em Principal/GeralUI.java
+
 package Principal;
 
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
-
+import DAO.ContasDAO;
+import DAO.MateriaisComunsDAO;
 
 public class GeralUI extends JPanel {
     private List<Contas> contas;
@@ -13,12 +16,16 @@ public class GeralUI extends JPanel {
     private DefaultTableModel contasModel;
     private DefaultTableModel materiaisModel;
     private CalculodeGastos calculo;
+    private ContasDAO contasDAO;
+    private MateriaisComunsDAO materiaisComunsDAO;
 
-    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns, ClinicaOdontoGUI clinica, CalculodeGastos calculo) {
+    public GeralUI(List<Contas> contas, List<MateriaisComuns> materiaisComuns, ClinicaOdontoGUI clinica, CalculodeGastos calculo, ContasDAO contasDAO, MateriaisComunsDAO materiaisComunsDAO) {
         this.contas = contas;
         this.materiaisComuns = materiaisComuns;
         this.clinica = clinica;
-        this.calculo=calculo;
+        this.calculo = calculo;
+        this.contasDAO = contasDAO;
+        this.materiaisComunsDAO = materiaisComunsDAO;
         setLayout(new BorderLayout());
 
         JPanel conteudo = new JPanel();
@@ -54,10 +61,7 @@ public class GeralUI extends JPanel {
                 calculo.setTaxaServico(taxaServico);
                 
                 clinica.atualizarComissaoFinanceiro(comissao);
-                // Calcular gastos totais
                 double gastoTotal = calculo.gastosTotais();
-
-                // Exibir resultado para o usuário
                 JOptionPane.showMessageDialog(this, String.format("Gasto Total por consulta: R$ %.2f", gastoTotal));
 
             } catch (NumberFormatException ex) {
@@ -91,7 +95,8 @@ public class GeralUI extends JPanel {
         JTable contasTable = new JTable(contasModel);
         TableColumn colRemover = contasTable.getColumnModel().getColumn(2);
         colRemover.setCellRenderer(new ButtonRenderer());
-        colRemover.setCellEditor(new ButtonEditor(new JCheckBox(), contas, contasModel));
+        // CORREÇÃO: Passando o contasDAO para o construtor do ButtonEditor
+        colRemover.setCellEditor(new ButtonEditor(new JCheckBox(), contas, contasModel, contasDAO));
         colRemover.setMaxWidth(40);
         JScrollPane scrollContas = new JScrollPane(contasTable);
         scrollContas.setPreferredSize(new Dimension(600, 150));
@@ -117,8 +122,10 @@ public class GeralUI extends JPanel {
             }
             try {
                 double valor = Double.parseDouble(valorTexto);
-                contas.add(new Contas(nome, valor));
-                calculo.getConta().addAll(contas);
+                Contas novaConta = new Contas(nome, valor);
+                contasDAO.inserir(novaConta);
+                contas.add(novaConta);
+                calculo.getConta().add(novaConta);
                 atualizarTabelaContas();
                 nomeContaField.setText("");
                 valorContaField.setText("");
@@ -143,7 +150,8 @@ public class GeralUI extends JPanel {
         JTable materiaisTable = new JTable(materiaisModel);
         TableColumn colRemover = materiaisTable.getColumnModel().getColumn(3);
         colRemover.setCellRenderer(new ButtonRenderer());
-        colRemover.setCellEditor(new ButtonEditorMateriais(new JCheckBox(), materiaisComuns, materiaisModel));
+        // CORREÇÃO: Passando o materiaisComunsDAO para o construtor do ButtonEditorMateriais
+        colRemover.setCellEditor(new ButtonEditorMateriais(new JCheckBox(), materiaisComuns, materiaisModel, materiaisComunsDAO));
         colRemover.setMaxWidth(40);
         materiaisPanel.add(new JScrollPane(materiaisTable), BorderLayout.CENTER);
 
@@ -174,8 +182,10 @@ public class GeralUI extends JPanel {
             try {
                 double valor = Double.parseDouble(valorTexto);
                 int qtd = Integer.parseInt(qtdTexto);
-                materiaisComuns.add(new MateriaisComuns(nome, valor, qtd));
-                calculo.getMateriaisComunses().addAll(materiaisComuns);
+                MateriaisComuns novoMaterial = new MateriaisComuns(nome, valor, qtd);
+                materiaisComunsDAO.inserir(novoMaterial); // Salva no banco
+                materiaisComuns.add(novoMaterial); // Adiciona na lista em memória
+                calculo.getMateriaisComunses().add(novoMaterial); // Adiciona ao cálculo
                 atualizarTabelaMateriais();
                 nomeMaterialField.setText("");
                 valorMaterialField.setText("");
@@ -213,17 +223,21 @@ public class GeralUI extends JPanel {
         }
     }
 
+    // CORREÇÃO: Construtor e lógica de deleção do ButtonEditor
     private static class ButtonEditor extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
         private int row;
         private List<Contas> contas;
         private DefaultTableModel model;
+        private ContasDAO contasDAO; // Adicionado
 
-        public ButtonEditor(JCheckBox checkBox, List<Contas> contas, DefaultTableModel model) {
+        // CORREÇÃO: O construtor agora aceita o ContasDAO
+        public ButtonEditor(JCheckBox checkBox, List<Contas> contas, DefaultTableModel model, ContasDAO contasDAO) {
             super(checkBox);
             this.contas = contas;
             this.model = model;
+            this.contasDAO = contasDAO; // Armazena o DAO
             button = new JButton("\u22ee");
             button.setFont(new Font("SansSerif", Font.PLAIN, 14));
             button.setOpaque(true);
@@ -241,6 +255,8 @@ public class GeralUI extends JPanel {
                 int opcao = JOptionPane.showConfirmDialog(button, "Remover esta conta?", "Confirmação",
                         JOptionPane.YES_NO_OPTION);
                 if (opcao == JOptionPane.YES_OPTION && row < contas.size()) {
+                    Contas contaParaRemover = contas.get(row);
+                    contasDAO.deletar(contaParaRemover.getId()); // Usa o DAO para deletar do banco
                     contas.remove(row);
                     model.removeRow(row);
                 }
@@ -255,17 +271,21 @@ public class GeralUI extends JPanel {
         }
     }
 
+    // CORREÇÃO: Construtor e lógica de deleção do ButtonEditorMateriais
     private static class ButtonEditorMateriais extends DefaultCellEditor {
         private JButton button;
         private boolean clicked;
         private int row;
         private List<MateriaisComuns> materiais;
         private DefaultTableModel model;
+        private MateriaisComunsDAO materiaisComunsDAO; // Adicionado
 
-        public ButtonEditorMateriais(JCheckBox checkBox, List<MateriaisComuns> materiais, DefaultTableModel model) {
+        // CORREÇÃO: O construtor agora aceita o MateriaisComunsDAO
+        public ButtonEditorMateriais(JCheckBox checkBox, List<MateriaisComuns> materiais, DefaultTableModel model, MateriaisComunsDAO materiaisComunsDAO) {
             super(checkBox);
             this.materiais = materiais;
             this.model = model;
+            this.materiaisComunsDAO = materiaisComunsDAO; // Armazena o DAO
             button = new JButton("\u22ee");
             button.setFont(new Font("SansSerif", Font.PLAIN, 14));
             button.setOpaque(true);
@@ -283,6 +303,8 @@ public class GeralUI extends JPanel {
                 int opcao = JOptionPane.showConfirmDialog(button, "Remover este material?", "Confirmação",
                         JOptionPane.YES_NO_OPTION);
                 if (opcao == JOptionPane.YES_OPTION && row < materiais.size()) {
+                    MateriaisComuns materialParaRemover = materiais.get(row);
+                    materiaisComunsDAO.deletar(materialParaRemover.getId()); // Usa o DAO para deletar do banco
                     materiais.remove(row);
                     model.removeRow(row);
                 }
