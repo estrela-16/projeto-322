@@ -1,7 +1,3 @@
-Com certeza\! Baseado nas suas especificações e nos arquivos do projeto, gerei o `README.md` abaixo.
-
------
-
 # Sistema de Gerenciamento de Consultório Odontológico
 
 ## Visão Geral
@@ -83,12 +79,13 @@ A aba "Financeiro" apresenta um relatório anual, mês a mês. Os cálculos são
 
 Para um funcionamento correto e para que os cálculos de preço sejam precisos, é altamente recomendado seguir a ordem abaixo ao inserir os dados no sistema pela primeira vez:
 
-1.  **Cadastrar Dentistas e Pacientes:** Comece inserindo as pessoas nas abas "Dentistas" e "Pacientes".
-2.  **Cadastrar Materiais Específicos:** Na aba "Materiais", adicione todos os materiais que são usados em procedimentos específicos (ex: resina, brocas, implantes).
-3.  **Configurar Gastos Gerais:**
+1.  **Cadastrar Dentistas e Pacientes:** Para rodar o código, execute o arquivo `TelaInicial.java`. Ele abrirá a primeira tela do sistema.
+2.  **Cadastrar Dentistas e Pacientes:** Comece inserindo as pessoas nas abas "Dentistas" e "Pacientes".
+3.  **Cadastrar Materiais Específicos:** Na aba "Materiais", adicione todos os materiais que são usados em procedimentos específicos (ex: resina, brocas, implantes).
+4.  **Configurar Gastos Gerais:**
       * Vá para a aba **"Gastos Gerais"**.
       * Adicione todas as **Contas** fixas e variáveis (água, luz, aluguel, etc.).
-      * Adicione os **Materiais Básicos** de uso comum.
+      * Adicione os **Materiais Básicos** de uso comum. (Use ctrl para adicionar mais que um material para cada procedimento)
       * Preencha os campos de **Configurações de Cálculo** (nº médio de consultas, comissão e taxa de serviço) e clique em "Salvar".
-4.  **Cadastrar Procedimentos:** Com todos os custos e materiais já inseridos, vá para a aba "Procedimentos". Ao criar um novo procedimento e associar os materiais a ele, o **preço será calculado automaticamente** com base nos dados que você inseriu no passo anterior.
-5.  **Agendar Atendimentos:** Por fim, com tudo configurado, utilize a aba "Agenda" para marcar os atendimentos, associando um paciente, um dentista e um procedimento. O status do pagamento (pago/não pago) pode ser alterado diretamente na agenda.
+5.  **Cadastrar Procedimentos:** Com todos os custos e materiais já inseridos, vá para a aba "Procedimentos". Ao criar um novo procedimento e associar os materiais a ele, o **preço será calculado automaticamente** com base nos dados que você inseriu no passo anterior.
+6.  **Agendar Atendimentos:** Por fim, com tudo configurado, utilize a aba "Agenda" para marcar os atendimentos, associando um paciente, um dentista e um procedimento. O status do pagamento (pago/não pago) pode ser alterado diretamente na agenda.
