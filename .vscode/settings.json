@@ -1,6 +1,7 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "Projeto322/lib/sqlite-jdbc-3.50.1.0.jar"
+        "Projeto322/lib/sqlite-jdbc-3.50.1.0.jar",
+        "Projeto322/lib/flatlaf-3.4.1.jar"
     ]
 }
