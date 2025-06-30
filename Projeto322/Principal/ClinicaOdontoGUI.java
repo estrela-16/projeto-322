@@ -215,7 +215,7 @@ public class ClinicaOdontoGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Procedimento '" + nomeProcedimento + "' adicionado com sucesso!");
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Não foi possível adicionar o procedimento.\n\nCausa provável: Já existe um procedimento com este nome.",
+                    "Não foi possível adicionar o procedimento.\n",
                     "Erro de Duplicidade",
                     JOptionPane.ERROR_MESSAGE);
             }
