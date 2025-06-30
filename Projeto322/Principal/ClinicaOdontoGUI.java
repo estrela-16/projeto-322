@@ -83,6 +83,10 @@ public class ClinicaOdontoGUI extends JFrame {
         contas = new ArrayList<>();
         materiaiscomuns = new ArrayList<>();
 
+        for (Procedimento p : gerenciarProcedimento.getProcedimentos()) {
+            p.setGastos(this.gastos);
+        }
+
         tabbedPane = new JTabbedPane();
         createMenuBar();
         createTabs();

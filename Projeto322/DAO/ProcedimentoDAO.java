@@ -3,92 +3,74 @@ package DAO;
 import Principal.ConexaoBD;
 import Principal.Materiais;
 import Principal.Procedimento;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProcedimentoDAO {
 
     /**
-     * Insere um novo procedimento no banco de dados.
+     * Insere um novo procedimento e seus materiais associados.
+     * A operação é feita em uma transação para garantir a consistência.
      */
     public void inserir(Procedimento procedimento) {
-        // CORREÇÃO: Adicionada a coluna 'especialidade'
-        String sqlProcedimento = "INSERT INTO procedimentos (nome, especialidade, preco) VALUES (?, ?, ?)";
+        String sqlProcedimento = "INSERT INTO procedimentos (nome, especialidade) VALUES (?, ?)";
         String sqlMateriais = "INSERT INTO procedimento_materiais (procedimento_id, material_id) VALUES (?, ?)";
-
         Connection conn = null;
-        PreparedStatement stmtProcedimento = null;
-        PreparedStatement stmtMateriais = null;
 
-        
         try {
             conn = ConexaoBD.conectar();
-            // Desativa o auto-commit para garantir que a operação seja atômica (tudo ou nada)
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // Inicia a transação
 
-            // Inserir o procedimento e obter o ID gerado
-            stmtProcedimento = conn.prepareStatement(sqlProcedimento, Statement.RETURN_GENERATED_KEYS);
-            stmtProcedimento.setString(1, procedimento.getNome());
-            stmtProcedimento.setString(2, procedimento.getEspecialidade());
-            stmtProcedimento.setDouble(3, procedimento.getPreco());
-            stmtProcedimento.executeUpdate();
+            // 1. Insere o procedimento principal
+            try (PreparedStatement stmt = conn.prepareStatement(sqlProcedimento, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, procedimento.getNome());
+                stmt.setString(2, procedimento.getEspecialidade());
+                stmt.executeUpdate();
 
-            try (ResultSet rs = stmtProcedimento.getGeneratedKeys()) {
-                if (rs.next()) {
-                    procedimento.setId(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        procedimento.setId(rs.getInt(1));
+                    }
                 }
             }
 
-            // Inserir os materiais associados na tabela de junção
-            stmtMateriais = conn.prepareStatement(sqlMateriais);
-            for (Materiais material : procedimento.getMateriais()) {
-                stmtMateriais.setInt(1, procedimento.getId());
-                stmtMateriais.setInt(2, material.getId());
-                stmtMateriais.addBatch(); // Adiciona a operação em um lote para execução em massa
+            // 2. Insere os materiais na tabela de junção
+            try (PreparedStatement stmt = conn.prepareStatement(sqlMateriais)) {
+                for (Materiais material : procedimento.getMateriais()) {
+                    stmt.setInt(1, procedimento.getId());
+                    stmt.setInt(2, material.getId());
+                    stmt.addBatch(); // Adiciona a operação ao lote
+                }
+                stmt.executeBatch(); // Executa todas as inserções de uma vez
             }
-            stmtMateriais.executeBatch(); // Executa todas as inserções de materiais
 
-            // Se tudo correu bem, confirma as alterações no banco
-            conn.commit();
-            System.out.println("Procedimento e materiais inseridos com sucesso! ID: " + procedimento.getId());
+            conn.commit(); // Confirma a transação
+            System.out.println("Procedimento inserido com sucesso! ID: " + procedimento.getId());
 
         } catch (SQLException e) {
-            // Em caso de erro, desfaz qualquer alteração
+            System.err.println("Erro ao inserir procedimento: " + e.getMessage());
             if (conn != null) {
                 try {
-                    conn.rollback();
+                    conn.rollback(); // Desfaz a transação em caso de erro
                 } catch (SQLException ex) {
                     System.err.println("Erro ao reverter transação: " + ex.getMessage());
                 }
             }
-            if (e.getErrorCode() == 19) { // UNIQUE constraint failed
-                System.err.println("Erro ao inserir procedimento: O nome '" + procedimento.getNome() + "' já existe.");
-            } else {
-                System.err.println("Erro ao inserir procedimento: " + e.getMessage());
-            }
         } finally {
-            // Fecha as conexões e reativa o auto-commit
-            try {
-                if (stmtProcedimento != null) stmtProcedimento.close();
-                if (stmtMateriais != null) stmtMateriais.close();
-                if (conn != null) {
+            if (conn != null) {
+                try {
                     conn.setAutoCommit(true);
                     conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Erro ao fechar conexão: " + e.getMessage());
                 }
-            } catch (SQLException e) {
-                System.err.println("Erro ao fechar recursos: " + e.getMessage());
             }
         }
     }
 
     /**
-     * Busca todos os procedimentos cadastrados no banco de dados.
+     * Busca todos os procedimentos e carrega seus materiais associados.
      */
     public List<Procedimento> buscarTodos() {
         List<Procedimento> procedimentos = new ArrayList<>();
@@ -99,13 +81,16 @@ public class ProcedimentoDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Procedimento procedimento = new Procedimento(
-                    rs.getInt("id"),
-                    rs.getString("nome"),
-                    rs.getString("especialidade"),
-                    rs.getDouble("preco") // CORREÇÃO: Nome da coluna sem cedilha
-                );
-                procedimento.getMateriais().addAll(buscarMateriaisPorProcedimentoId(procedimento.getId(), conn));
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+                String especialidade = rs.getString("especialidade");
+                
+                // Construtor foi ajustado para não precisar do preço
+                Procedimento procedimento = new Procedimento(id, nome, especialidade);
+                
+                // Carrega os materiais para este procedimento
+                procedimento.setMateriais(buscarMateriaisPorProcedimentoId(id));
+                
                 procedimentos.add(procedimento);
             }
         } catch (SQLException e) {
@@ -114,28 +99,34 @@ public class ProcedimentoDAO {
         return procedimentos;
     }
 
-    private List<Materiais> buscarMateriaisPorProcedimentoId(int procedimentoId, Connection conn) throws SQLException {
+    /**
+     * Método auxiliar para buscar os materiais de um procedimento específico.
+     */
+    private List<Materiais> buscarMateriaisPorProcedimentoId(int procedimentoId) {
         List<Materiais> materiais = new ArrayList<>();
-        String sql = "SELECT m.id, m.nome, m.valor " +
-                     "FROM materiais m " +
+        // Query que junta as tabelas para encontrar os materiais
+        String sql = "SELECT m.id, m.nome, m.valor FROM materiais m " +
                      "JOIN procedimento_materiais pm ON m.id = pm.material_id " +
                      "WHERE pm.procedimento_id = ?";
-        
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = ConexaoBD.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, procedimentoId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    materiais.add(new Materiais(
-                        rs.getInt("id"),
-                        rs.getString("nome"),
-                        rs.getDouble("valor")
-                    ));
-                }
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                materiais.add(new Materiais(
+                    rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getDouble("valor")
+                ));
             }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar materiais do procedimento: " + e.getMessage());
         }
         return materiais;
     }
-    
     /**
      * Atualiza os dados de um procedimento de forma dinâmica.
      */

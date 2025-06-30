@@ -50,14 +50,14 @@ public class AtendimentoDAO {
         List<Atendimento> atendimentos = new ArrayList<>();
         // Query com JOIN para buscar todos os dados necessários de uma vez
         String sql = "SELECT " +
-                     "a.id as atendimento_id, a.data, a.horario, a.status_pagamento, " +
-                     "p.id as paciente_id, p.nome as paciente_nome, p.cpf as paciente_cpf, p.telefone as paciente_telefone, " +
-                     "d.id as dentista_id, d.nome as dentista_nome, d.cpf as dentista_cpf, d.telefone as dentista_telefone, d.cro, " +
-                     "proc.id as procedimento_id, proc.nome as procedimento_nome, proc.especialidade, proc.preco " +
-                     "FROM atendimentos a " +
-                     "JOIN pacientes p ON a.paciente_id = p.id " +
-                     "JOIN dentistas d ON a.dentista_id = d.id " +
-                     "JOIN procedimentos proc ON a.procedimento_id = proc.id";
+                 "a.id as atendimento_id, a.data, a.horario, a.status_pagamento, " +
+                 "p.id as paciente_id, p.nome as paciente_nome, p.cpf as paciente_cpf, p.telefone as paciente_telefone, " +
+                 "d.id as dentista_id, d.nome as dentista_nome, d.cpf as dentista_cpf, d.telefone as dentista_telefone, d.cro, " +
+                 "proc.id as procedimento_id, proc.nome as procedimento_nome, proc.especialidade " +
+                 "FROM atendimentos a " +
+                 "JOIN pacientes p ON a.paciente_id = p.id " +
+                 "JOIN dentistas d ON a.dentista_id = d.id " +
+                 "JOIN procedimentos proc ON a.procedimento_id = proc.id";
 
         try (Connection conn = ConexaoBD.conectar();
              Statement stmt = conn.createStatement();
@@ -85,8 +85,7 @@ public class AtendimentoDAO {
                 Procedimento procedimento = new Procedimento(
                     rs.getInt("procedimento_id"),
                     rs.getString("procedimento_nome"),
-                    rs.getString("especialidade"),
-                    rs.getDouble("preco")
+                    rs.getString("especialidade")
                 );
 
                 // Criar e preencher o objeto Atendimento

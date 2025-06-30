@@ -22,11 +22,10 @@ public class Procedimento implements Id_Banco{
     }
 
     // Construtor para recuperar do banco de dados
-    public Procedimento(int id, String nome, String especialidade, double preco) {
+    public Procedimento(int id, String nome, String especialidade) {
         this.id = id;
         this.nome = nome;
         this.especialidade = especialidade;
-        this.preco=preco;
         this.materiais = new ArrayList<>();
     }
 
@@ -78,6 +77,10 @@ public class Procedimento implements Id_Banco{
     }
     }
 
+    public void setMateriais(List<Materiais> materiais) {
+        this.materiais = materiais;
+    }
+
     public double calcularGastos(){
         double total = 0;
         for (int i = 0; i< valoresMateriais.size(); i++) {
@@ -85,6 +88,10 @@ public class Procedimento implements Id_Banco{
         }
         return total+gastos.gastosTotais();
     }
+
+    public void setGastos(CalculodeGastos gastos) {
+    this.gastos = gastos;
+}
 
     public double calcularCustoTotal() {
         double taxa;

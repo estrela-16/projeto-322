@@ -41,20 +41,20 @@ public class CriadorTabelas {
                               "valor REAL NOT NULL" +
                               ");";
 
-        String sqlProcedimentos = "CREATE TABLE IF NOT EXISTS procedimentos (" +
+         String sqlProcedimentos = "CREATE TABLE IF NOT EXISTS procedimentos (" +
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                                   "nome TEXT NOT NULL UNIQUE," +
-                                  "especialidade TEXT NOT NULL," +
-                                  "preco REAL NOT NULL" +
+                                  "especialidade TEXT NOT NULL" + // Preço foi removido daqui
                                   ");";
 
-        String sqlProcedimentosMateriais = "CREATE TABLE IF NOT EXISTS procedimento_materiais (" +
-                                    "procedimento_id INTEGER NOT NULL," +
-                                    "material_id INTEGER NOT NULL," +
-                                    "FOREIGN KEY (procedimento_id) REFERENCES procedimentos(id) ON DELETE CASCADE," +
-                                    "FOREIGN KEY (material_id) REFERENCES materiais(id) ON DELETE CASCADE," +
-                                    "PRIMARY KEY (procedimento_id, material_id)" +
-                                    ");";
+        // NOVA TABELA: Para ligar procedimentos e materiais (relação Muitos-para-Muitos)
+        String sqlProcedimentoMateriais = "CREATE TABLE IF NOT EXISTS procedimento_materiais (" +
+                                          "procedimento_id INTEGER NOT NULL," +
+                                          "material_id INTEGER NOT NULL," +
+                                          "FOREIGN KEY (procedimento_id) REFERENCES procedimentos(id) ON DELETE CASCADE," +
+                                          "FOREIGN KEY (material_id) REFERENCES materiais(id) ON DELETE CASCADE," +
+                                          "PRIMARY KEY (procedimento_id, material_id)" +
+                                          ");";
 
         String sqlAtendimentos = "CREATE TABLE IF NOT EXISTS atendimentos (" +
                                  "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -79,7 +79,7 @@ public class CriadorTabelas {
             stmt.execute(sqlHistoricoImagens);
             stmt.execute(sqlMateriais);
             stmt.execute(sqlProcedimentos);
-            stmt.execute(sqlProcedimentosMateriais);
+            stmt.execute(sqlProcedimentoMateriais);
             stmt.execute(sqlAtendimentos);
 
             System.out.println("Tabelas criadas ou já existentes.");
